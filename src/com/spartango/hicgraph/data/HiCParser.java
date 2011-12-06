@@ -44,7 +44,13 @@ public class HiCParser implements HiCDataSource {
             System.err.println("Got stuck while trying to read file: @line "
                                + newReads.size());
         }
-
+        if (reader != null) {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                System.err.println("Failed to close reader");
+            }
+        }
         return newReads;
     }
 

@@ -1,6 +1,13 @@
 package com.spartango.hicgraph.data;
 
-public class HiCRead {
+import java.io.Serializable;
+
+public class HiCRead implements Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5479832539919693966L;
 
     private String     name;
 
