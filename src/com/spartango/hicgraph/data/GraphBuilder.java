@@ -6,5 +6,5 @@ import com.spartango.hicgraph.model.ChromatinGraph;
 
 public interface GraphBuilder {
 
-	public ChromatinGraph buildChromatinGraph(Vector<HiCRead> reads);
+    public ChromatinGraph buildChromatinGraph(Vector<HiCRead> reads);
 }

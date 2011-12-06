@@ -9,19 +9,19 @@ public class HiCRead implements Serializable {
      */
     private static final long serialVersionUID = 5479832539919693966L;
 
-    private String     name;
+    private String            name;
 
-    private final int  firstChromosome;
-    private final long firstPosition;
-    private final int  firstStrand;
-    private final int  firstRestrictionFragment;
+    private final int         firstChromosome;
+    private final long        firstPosition;
+    private final int         firstStrand;
+    private final int         firstRestrictionFragment;
 
-    private final int  secondChromosome;
-    private final long secondPosition;
-    
-    private final int secondStrand;              
-    private final int secondRestrictionFragment; 
-    
+    private final int         secondChromosome;
+    private final long        secondPosition;
+
+    private final int         secondStrand;
+    private final int         secondRestrictionFragment;
+
     public HiCRead(String name,
                    int firstChromosome,
                    long firstPosition,
@@ -32,14 +32,14 @@ public class HiCRead implements Serializable {
                    int secondStrand,
                    int secondRestrictionFragment) {
 
-        this.name                      = name;
-        this.firstChromosome           = firstChromosome;
-        this.firstPosition             = firstPosition;
-        this.firstStrand               = firstStrand;
-        this.firstRestrictionFragment  = firstRestrictionFragment;
-        this.secondChromosome          = secondChromosome;
-        this.secondPosition            = secondPosition;
-        this.secondStrand              = secondStrand;
+        this.name = name;
+        this.firstChromosome = firstChromosome;
+        this.firstPosition = firstPosition;
+        this.firstStrand = firstStrand;
+        this.firstRestrictionFragment = firstRestrictionFragment;
+        this.secondChromosome = secondChromosome;
+        this.secondPosition = secondPosition;
+        this.secondStrand = secondStrand;
         this.secondRestrictionFragment = secondRestrictionFragment;
     }
 
@@ -78,7 +78,5 @@ public class HiCRead implements Serializable {
     public long getSecondPosition() {
         return secondPosition;
     }
-    
-    
 
 }

@@ -30,12 +30,12 @@ public class BinaryGraphBuilder implements GraphBuilder {
                                                                firstReadPosition,
                                                                read.getFirstStrand());
             ChromatinLocation secondLoc = new ChromatinLocation(
-                                                               read.getSecondChromosome(),
-                                                               secondReadPosition,
-                                                               read.getSecondStrand());
+                                                                read.getSecondChromosome(),
+                                                                secondReadPosition,
+                                                                read.getSecondStrand());
             graph.addVertex(firstLoc);
             graph.addVertex(secondLoc);
-            
+
             // Then link the nodes with an edge.
             ChromatinRelation link = new ChromatinRelation();
             graph.addEdge(link, firstLoc, secondLoc);

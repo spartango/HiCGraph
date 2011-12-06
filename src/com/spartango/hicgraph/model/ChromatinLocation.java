@@ -6,7 +6,7 @@ public class ChromatinLocation {
     public static final int CRICK  = 1;
 
     private int             chromosome;
-    private long             position;
+    private long            position;
     private int             strand;
 
     public ChromatinLocation(int chromosome, long position, int strand) {
