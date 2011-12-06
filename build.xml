@@ -1,0 +1,42 @@
+<project name="HiC Graph" basedir=".">
+
+	<target name="clean">
+	    <delete dir="bin" />
+	</target>
+
+	<target name="javadoc">
+	    <javadoc destdir="docs" author="true" version="true" use="true" windowtitle="HiCGraph">
+
+	        <packageset dir="src" defaultexcludes="yes">
+	            <include name="com/**" />
+	        </packageset>
+
+	        <doctitle>
+	            <![CDATA[<h1>HiC Graph Javadoc</h1>]]></doctitle>
+	    <bottom>
+	    </bottom>
+
+		</javadoc>
+	</target>
+
+	<target name="compile">
+	    <mkdir dir="bin/" />
+	    <javac srcdir="src" destdir="bin"/>
+	</target>
+
+	<target name="jar" depends="compile">
+	    <mkdir dir="jar" />
+	    <jar destfile="jar/HiCGraph.jar" basedir="bin">
+	    </jar>
+	</target>
+
+	<target name="help">
+	    <echo> - HiC Graph Build Commands - ${line.separator}</echo>
+	    <echo>help: Get this list ${line.separator}</echo>
+	    <echo>compile: Compile the project ${line.separator}</echo>
+	    <echo>clean: clear the compiled class files ${line.separator}</echo>
+	    <echo>jar: create a jar with the compiled classes ${line.separator} </echo>
+	    <echo>javadoc: generate a javadoc for this project</echo>
+	</target>
+
+</project>
