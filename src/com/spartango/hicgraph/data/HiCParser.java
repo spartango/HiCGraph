@@ -31,7 +31,7 @@ public class HiCParser implements HiCDataSource, Runnable {
         // chromosome2, position2, strand2, restrictionfragment2 \n
         // Screen against comments
         if (!line.startsWith("#")) {
-            String[] parts = line.split(" ");
+            String[] parts = line.split("\t");
             if (parts.length == 9) {
                 try {
                     String name = parts[0];
@@ -88,6 +88,8 @@ public class HiCParser implements HiCDataSource, Runnable {
     }
 
     public void run() {
+        System.out.println("Parser Started");
+
         // Open file for read
         BufferedReader reader = null;
         try {

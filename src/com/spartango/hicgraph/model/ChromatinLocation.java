@@ -24,13 +24,20 @@ public class ChromatinLocation {
 
         if (obj instanceof ChromatinLocation) {
             ChromatinLocation target = (ChromatinLocation) obj;
-            if (target.strand == this.strand
-                && target.chromosome == this.chromosome
+            if (target.chromosome == this.chromosome
                 && target.position == this.position)
                 return true;
             else
                 return false;
         } else
             return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 31 + chromosome;
+        hash = hash * 31 + (int) (position ^ (position >>> 32));
+        return hash;
     }
 }

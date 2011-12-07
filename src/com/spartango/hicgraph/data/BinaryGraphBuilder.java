@@ -36,30 +36,37 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
         long firstReadPosition = bin(read.getFirstPosition());
         long secondReadPosition = bin(read.getSecondPosition());
         
-        // Generate a node for each side (if none exists)
-        ChromatinLocation firstLoc = new ChromatinLocation(
-                                                           read.getFirstChromosome(),
-                                                           firstReadPosition,
-                                                           read.getFirstStrand());
-        ChromatinLocation secondLoc = new ChromatinLocation(
-                                                            read.getSecondChromosome(),
-                                                            secondReadPosition,
-                                                            read.getSecondStrand());
-        graph.addVertex(firstLoc);
-        graph.addVertex(secondLoc);
+        // Prevent Self links, these are meaningless
+        if (firstReadPosition != secondReadPosition) {
+            // Generate a node for each side (if none exists)
+            ChromatinLocation firstLoc = new ChromatinLocation(
+                                                               read.getFirstChromosome(),
+                                                               firstReadPosition,
+                                                               read.getFirstStrand());
+            ChromatinLocation secondLoc = new ChromatinLocation(
+                                                                read.getSecondChromosome(),
+                                                                secondReadPosition,
+                                                                read.getSecondStrand());
+            graph.addVertex(firstLoc);
+            graph.addVertex(secondLoc);
 
-        // Then link the nodes with an edge.
-        ChromatinRelation link = new ChromatinRelation();
-        graph.addEdge(link, firstLoc, secondLoc);
+            // Then link the nodes with an edge.
+            ChromatinRelation link = new ChromatinRelation();
+            graph.addEdge(link, firstLoc, secondLoc);
+        }
     }
 
     private long bin(long target) {
-        // TODO implement binning
-        return target;
+        // TODO implement intelligent binning
+        
+        System.out.println("Bin: "+target +" -> "+((target / binSize) * binSize));
+        // divide by binSize and floor
+       return (target / binSize) * binSize;
     }
 
     @Override
     public void onReadingStarted(BlockingQueue<HiCRead> readQueue) {
+        source = readQueue;
         // Start the build thread
         buildThread.start();
     }
@@ -92,28 +99,24 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
     @Override
     public void run() {
         running = true;
-
-        while (running) {
+        System.out.println("Builder Started");
+        while (running && source != null) {
             // Try to grab an element off of the sourceQueue
-            if (source != null && !sourceComplete) {
                 try {
                     HiCRead read = source.poll(120, TimeUnit.MILLISECONDS);
 
                     if (read != null) {
                         addRead(read);
+                    } else if(sourceComplete){ 
+                        running = false;
                     }
 
                 } catch (InterruptedException e) {
                     System.err.println("Interrupted while polling for data");
                 }
-            } else {
-                // No more data here
-                running = false;
-            }
-        }
-        
-        notifyComplete();
 
+        }
+        notifyComplete();
     }
 
     private void notifyComplete() {

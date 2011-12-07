@@ -31,13 +31,14 @@ public class GraphImageRenderer {
 
     public Image getImage() {
         return server.getImage(new Point2D.Double(800, 600),
-                                               new Dimension(1600, 1200));
+                               new Dimension(1600, 1200));
     }
-    
+
     public void saveImage(String filename) {
         File f = new File(filename);
         try {
-            ImageIO.write((BufferedImage) getImage(),"png",f);
+            ImageIO.write((BufferedImage) getImage(), "png", f);
+            System.out.println("Rendered Image");
         } catch (IOException e) {
             System.err.println("Failed to save image file");
         }

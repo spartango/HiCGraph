@@ -10,10 +10,10 @@ public class Main {
     
     public static void main(String[] args) {
         // Parse data
-        HiCParser parser = new HiCParser("GSM455133_30E0LAAXX.1.maq.hic.summary.binned.txt");
+        HiCParser parser = new HiCParser("/Volumes/DarkIron/HiC Data/short_data.txt");
         
         // Build Graph
-        BinaryGraphBuilder builder = new BinaryGraphBuilder(50);
+        BinaryGraphBuilder builder = new BinaryGraphBuilder(100);
         
         // Assemble pipes
         parser.addConsumer(builder);
@@ -22,15 +22,20 @@ public class Main {
             @Override
             public void onGraphBuilt(ChromatinGraph graph) {
                 // Render Graph
+                System.out.println("Graph built: "+graph.getEdgeCount()+" edges & "+graph.getVertexCount()+" nodes");
                 GraphImageRenderer renderer = new GraphImageRenderer(graph);
-                renderer.saveImage("out.png");
+                renderer.saveImage("/Volumes/DarkIron/HiC Data/short_data.png");
                 System.exit(0);
             }
         });
         
         parser.startReading();
         while(true) {
-            Thread.yield();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
