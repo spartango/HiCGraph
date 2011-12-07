@@ -35,6 +35,7 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
         // Bin the read positions
         long firstReadPosition = bin(read.getFirstPosition());
         long secondReadPosition = bin(read.getSecondPosition());
+        
         // Generate a node for each side (if none exists)
         ChromatinLocation firstLoc = new ChromatinLocation(
                                                            read.getFirstChromosome(),
@@ -94,14 +95,30 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
 
         while (running) {
             // Try to grab an element off of the sourceQueue
-            if(source != null && !sourceComplete) {
+            if (source != null && !sourceComplete) {
                 try {
-                    source.poll(120, TimeUnit.MILLISECONDS);
+                    HiCRead read = source.poll(120, TimeUnit.MILLISECONDS);
+
+                    if (read != null) {
+                        addRead(read);
+                    }
+
                 } catch (InterruptedException e) {
                     System.err.println("Interrupted while polling for data");
                 }
+            } else {
+                // No more data here
+                running = false;
             }
         }
+        
+        notifyComplete();
 
+    }
+
+    private void notifyComplete() {
+        if(consumer != null) {
+            consumer.onGraphBuilt(graph);
+        }
     }
 }
