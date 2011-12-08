@@ -22,7 +22,7 @@ import edu.uci.ics.jung.visualization.VisualizationImageServer;
 public class GraphImageRenderer {
     private FRLayout<ChromatinLocation, ChromatinRelation>                 layout;
     private VisualizationImageServer<ChromatinLocation, ChromatinRelation> server;
-    private int imageSize;
+    private int                                                            imageSize;
 
     public GraphImageRenderer(ChromatinGraph graph, int size) {
         imageSize = size;
@@ -42,7 +42,7 @@ public class GraphImageRenderer {
     }
 
     public Image getImage() {
-        return server.getImage(new Point2D.Double(imageSize/2, imageSize/2),
+        return server.getImage(new Point2D.Double(imageSize / 2, imageSize / 2),
                                new Dimension(imageSize, imageSize));
     }
 

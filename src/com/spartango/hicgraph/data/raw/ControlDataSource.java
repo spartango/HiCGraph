@@ -14,9 +14,16 @@ public class ControlDataSource implements HiCDataSource, Runnable {
     private List<HiCRead>   reads;
 
     private int             readsToGenerate;
+    private int             chromosomeRestriction;
 
     public ControlDataSource(int readsToGenerate) {
+        this(readsToGenerate, -1);
+    }
+
+    public ControlDataSource(int readsToGenerate, int chromosomeRestriction) {
         this.readsToGenerate = readsToGenerate;
+        this.chromosomeRestriction = chromosomeRestriction;
+
         reads = new ArrayList<HiCRead>(readsToGenerate);
     }
 
@@ -76,19 +83,23 @@ public class ControlDataSource implements HiCDataSource, Runnable {
         // Generate a read with some randomized data
         String name = "" + Math.random();
 
-        int firstChromosome = (int) Math.round(Math.random()
-                                               * ChromatinLocation.NUM_CHROMOSOMES);
+        int firstChromosome = (chromosomeRestriction == -1 ? (int) Math.round(Math.random()
+                                                                              * (ChromatinLocation.NUM_CHROMOSOMES - 1))
+                                                          : chromosomeRestriction);
         long firstPosition = Math.round(ChromatinLocation.CHROMOSOME_LENGTHS[firstChromosome]
                                         * Math.random());
         int firstStrand = 0;
         int firstRestrictionFragment = 0;
-        int secondChromosome = (int) Math.round(Math.random()
-                                                * ChromatinLocation.NUM_CHROMOSOMES);
+        int secondChromosome = (chromosomeRestriction == -1 ? (int) Math.round(Math.random()
+                                                                               * (ChromatinLocation.NUM_CHROMOSOMES - 1))
+                                                           : chromosomeRestriction);
         long secondPosition = Math.round(ChromatinLocation.CHROMOSOME_LENGTHS[secondChromosome]
                                          * Math.random());
         int secondStrand = 0;
         int secondRestrictionFragment = 0;
-
+        System.out.println("Generated Read: " + firstChromosome + ":"
+                           + firstPosition + " -> " + secondChromosome + ":"
+                           + secondPosition);
         HiCRead newRead = new HiCRead(name, firstChromosome, firstPosition,
                                       firstStrand, firstRestrictionFragment,
                                       secondChromosome, secondPosition,
