@@ -1,4 +1,4 @@
-package com.spartango.hicgraph.data;
+package com.spartango.hicgraph.data.raw;
 
 import java.io.Serializable;
 

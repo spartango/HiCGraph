@@ -2,7 +2,8 @@ package com.spartango.hicgraph.deploy;
 
 import com.spartango.hicgraph.data.BinaryGraphBuilder;
 import com.spartango.hicgraph.data.GraphConsumer;
-import com.spartango.hicgraph.data.HiCParser;
+import com.spartango.hicgraph.data.filters.IntrachromosomalFilter;
+import com.spartango.hicgraph.data.raw.HiCParser;
 import com.spartango.hicgraph.model.ChromatinGraph;
 import com.spartango.hicgraph.visualization.GraphImageRenderer;
 
@@ -13,7 +14,7 @@ public class Main {
         HiCParser parser = new HiCParser("/Volumes/DarkIron/HiC Data/short_data.txt");
         
         // Build Graph
-        BinaryGraphBuilder builder = new BinaryGraphBuilder(100);
+        BinaryGraphBuilder builder = new BinaryGraphBuilder(200, new IntrachromosomalFilter());
         
         // Assemble pipes
         parser.addConsumer(builder);
@@ -23,8 +24,8 @@ public class Main {
             public void onGraphBuilt(ChromatinGraph graph) {
                 // Render Graph
                 System.out.println("Graph built: "+graph.getEdgeCount()+" edges & "+graph.getVertexCount()+" nodes");
-                GraphImageRenderer renderer = new GraphImageRenderer(graph);
-                renderer.saveImage("/Volumes/DarkIron/HiC Data/short_data.png");
+                GraphImageRenderer renderer = new GraphImageRenderer(graph, 8128);
+                renderer.saveImage("/Volumes/DarkIron/HiC Data/short_Data.png");
                 System.exit(0);
             }
         });

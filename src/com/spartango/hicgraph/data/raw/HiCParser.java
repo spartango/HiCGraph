@@ -1,4 +1,4 @@
-package com.spartango.hicgraph.data;
+package com.spartango.hicgraph.data.raw;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -8,8 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
+
 public class HiCParser implements HiCDataSource, Runnable {
-    public static int       BUFFER_SIZE = 1000000;
 
     private String          sourceFile;
     private HiCDataConsumer consumer;

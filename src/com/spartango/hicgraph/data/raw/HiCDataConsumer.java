@@ -1,6 +1,7 @@
-package com.spartango.hicgraph.data;
+package com.spartango.hicgraph.data.raw;
 
 import java.util.concurrent.BlockingQueue;
+
 
 public interface HiCDataConsumer {
 

@@ -3,6 +3,8 @@ package com.spartango.hicgraph.data;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import com.spartango.hicgraph.data.filters.ReadFilter;
+import com.spartango.hicgraph.data.raw.HiCRead;
 import com.spartango.hicgraph.model.ChromatinGraph;
 import com.spartango.hicgraph.model.ChromatinLocation;
 import com.spartango.hicgraph.model.ChromatinRelation;
@@ -19,7 +21,13 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
     private BlockingQueue<HiCRead> source;
     private boolean                sourceComplete;
 
+    private ReadFilter             filter;
+
     public BinaryGraphBuilder(int binSize) {
+        this(binSize, null);
+    }
+
+    public BinaryGraphBuilder(int binSize, ReadFilter f) {
         this.binSize = binSize;
         graph = new ChromatinGraph();
         consumer = null;
@@ -29,39 +37,47 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
 
         source = null;
         sourceComplete = false;
+
+        filter = f;
     }
 
     private void addRead(HiCRead read) {
-        // Bin the read positions
-        long firstReadPosition = bin(read.getFirstPosition());
-        long secondReadPosition = bin(read.getSecondPosition());
-        
-        // Prevent Self links, these are meaningless
-        if (firstReadPosition != secondReadPosition) {
-            // Generate a node for each side (if none exists)
-            ChromatinLocation firstLoc = new ChromatinLocation(
-                                                               read.getFirstChromosome(),
-                                                               firstReadPosition,
-                                                               read.getFirstStrand());
-            ChromatinLocation secondLoc = new ChromatinLocation(
-                                                                read.getSecondChromosome(),
-                                                                secondReadPosition,
-                                                                read.getSecondStrand());
-            graph.addVertex(firstLoc);
-            graph.addVertex(secondLoc);
 
-            // Then link the nodes with an edge.
-            ChromatinRelation link = new ChromatinRelation();
-            graph.addEdge(link, firstLoc, secondLoc);
+        // Filter if necessary
+        if (filter == null || filter.check(read)) {
+
+            // Bin the read positions
+            long firstReadPosition = bin(read.getFirstPosition());
+            long secondReadPosition = bin(read.getSecondPosition());
+
+            // Prevent Self links, these are meaningless
+            if (firstReadPosition != secondReadPosition) {
+                // Generate a node for each side (if none exists)
+                ChromatinLocation firstLoc = new ChromatinLocation(
+                                                                   read.getFirstChromosome(),
+                                                                   firstReadPosition,
+                                                                   read.getFirstStrand());
+                ChromatinLocation secondLoc = new ChromatinLocation(
+                                                                    read.getSecondChromosome(),
+                                                                    secondReadPosition,
+                                                                    read.getSecondStrand());
+                graph.addVertex(firstLoc);
+                graph.addVertex(secondLoc);
+
+                // Then link the nodes with an edge.
+                ChromatinRelation link = new ChromatinRelation(firstLoc,
+                                                               secondLoc);
+                if (!graph.containsEdge(link))
+                    graph.addEdge(link, firstLoc, secondLoc);
+            }
         }
     }
 
     private long bin(long target) {
         // TODO implement intelligent binning
-        
-        System.out.println("Bin: "+target +" -> "+((target / binSize) * binSize));
+
         // divide by binSize and floor
-       return (target / binSize) * binSize;
+        return (target / binSize) * binSize;
     }
 
     @Override
@@ -102,25 +118,25 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
         System.out.println("Builder Started");
         while (running && source != null) {
             // Try to grab an element off of the sourceQueue
-                try {
-                    HiCRead read = source.poll(120, TimeUnit.MILLISECONDS);
+            try {
+                HiCRead read = source.poll(120, TimeUnit.MILLISECONDS);
 
-                    if (read != null) {
-                        addRead(read);
-                    } else if(sourceComplete){ 
-                        running = false;
-                    }
-
-                } catch (InterruptedException e) {
-                    System.err.println("Interrupted while polling for data");
+                if (read != null) {
+                    addRead(read);
+                } else if (sourceComplete) {
+                    running = false;
                 }
+
+            } catch (InterruptedException e) {
+                System.err.println("Interrupted while polling for data");
+            }
 
         }
         notifyComplete();
     }
 
     private void notifyComplete() {
-        if(consumer != null) {
+        if (consumer != null) {
             consumer.onGraphBuilt(graph);
         }
     }
