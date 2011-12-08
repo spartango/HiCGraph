@@ -80,4 +80,9 @@ public class ChromatinLocation {
     public int getStrand() {
         return strand;
     }
+    
+    @Override
+    public String toString() {
+        return "["+chromosome+":"+position+"]";
+    }
 }

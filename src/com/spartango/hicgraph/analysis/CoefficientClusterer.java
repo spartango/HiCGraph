@@ -35,4 +35,16 @@ public class CoefficientClusterer implements Clusterer {
         
     }
 
+    @Override
+    public void addConsumer(ClusterConsumer c) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void removeConsumer(ClusterConsumer c) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

@@ -51,6 +51,8 @@ public class GNClusterer extends
     public void run() {
         if (source != null) {
             running = true;
+            System.out.println("Clusterer Started: " + source.getVertexCount()
+                               + " nodes & " + source.getEdgeCount() + " edges");
 
             Set<Set<ChromatinLocation>> clusters = findClusters(source);
             notifyComplete(clusters);
