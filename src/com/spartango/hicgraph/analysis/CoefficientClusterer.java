@@ -29,4 +29,10 @@ public class CoefficientClusterer implements Clusterer {
         return null;
     }
 
+    @Override
+    public void onGraphBuilt(ChromatinGraph graph) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

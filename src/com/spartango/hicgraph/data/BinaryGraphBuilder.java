@@ -32,7 +32,6 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
         graph = new ChromatinGraph();
         consumer = null;
 
-        buildThread = new Thread(this);
         running = false;
 
         source = null;
@@ -83,6 +82,9 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
     @Override
     public void onReadingStarted(BlockingQueue<HiCRead> readQueue) {
         source = readQueue;
+        
+        buildThread = new Thread(this);
+        
         // Start the build thread
         buildThread.start();
     }
