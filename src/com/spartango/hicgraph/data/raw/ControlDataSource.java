@@ -6,7 +6,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.spartango.hicgraph.model.ChromatinLocation;
 
-
 public class ControlDataSource implements HiCDataSource, Runnable {
     private HiCDataConsumer consumer;
 
@@ -75,22 +74,27 @@ public class ControlDataSource implements HiCDataSource, Runnable {
 
     private HiCRead generateRead() {
         // Generate a read with some randomized data
-        String name = ""+Math.random();
-        
-        int firstChromosome = (int) Math.round(Math.random() * ChromatinLocation.NUM_CHROMOSOMES);
-        long firstPosition = ;
-        int firstStrand= 
-        int firstRestrictionFragment,
-        int secondChromosome,
-        long secondPosition,
-        int secondStrand,
-        int secondRestrictionFragment
-        HiCRead newRead = new HiCRead(null, readsToGenerate, readsToGenerate,
-                                      readsToGenerate, readsToGenerate,
-                                      readsToGenerate, readsToGenerate,
-                                      readsToGenerate, readsToGenerate);
+        String name = "" + Math.random();
 
-        return null;
+        int firstChromosome = (int) Math.round(Math.random()
+                                               * ChromatinLocation.NUM_CHROMOSOMES);
+        long firstPosition = Math.round(ChromatinLocation.CHROMOSOME_LENGTHS[firstChromosome]
+                                        * Math.random());
+        int firstStrand = 0;
+        int firstRestrictionFragment = 0;
+        int secondChromosome = (int) Math.round(Math.random()
+                                                * ChromatinLocation.NUM_CHROMOSOMES);
+        long secondPosition = Math.round(ChromatinLocation.CHROMOSOME_LENGTHS[secondChromosome]
+                                         * Math.random());
+        int secondStrand = 0;
+        int secondRestrictionFragment = 0;
+
+        HiCRead newRead = new HiCRead(name, firstChromosome, firstPosition,
+                                      firstStrand, firstRestrictionFragment,
+                                      secondChromosome, secondPosition,
+                                      secondStrand, secondRestrictionFragment);
+
+        return newRead;
     }
 
     private void notifyComplete() {

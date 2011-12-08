@@ -7,7 +7,7 @@ public class ChromatinLocation {
 
     public static final int   NUM_CHROMOSOMES    = 24;
 
-    public static final int[] CHROMOSOME_LENGTHS = {
+    public static final long[] CHROMOSOME_LENGTHS = {
             249250621,
             243199373,
             198022430,
@@ -31,11 +31,11 @@ public class ChromatinLocation {
             48129895,
             51304566,
             155270560,
-            59373566};
+            59373566                            };
 
-    private int               chromosome;
-    private long              position;
-    private int               strand;
+    private final int         chromosome;
+    private final long        position;
+    private final int         strand;
 
     public ChromatinLocation(int chromosome, long position, int strand) {
         this.chromosome = chromosome;
@@ -67,5 +67,17 @@ public class ChromatinLocation {
         hash = hash * 31 + chromosome;
         hash = hash * 31 + (int) (position ^ (position >>> 32));
         return hash;
+    }
+
+    public int getChromosome() {
+        return chromosome;
+    }
+
+    public long getPosition() {
+        return position;
+    }
+
+    public int getStrand() {
+        return strand;
     }
 }
