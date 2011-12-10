@@ -32,8 +32,6 @@ public class EnsemblConnection {
 
             for (int i = 1; i <= ChromatinLocation.NUM_CHROMOSOMES - 2; i++) {
                 Chromosome raw = humanSpecies.getChromosomeByName("" + i);
-                System.out.println("Chromosome " + i + " allocated: "
-                                   + raw.getLength());
                 chromosomes[i - 1] = new CachedChromosome(raw);
             }
 

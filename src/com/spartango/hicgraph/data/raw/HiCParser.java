@@ -49,12 +49,15 @@ public class HiCParser implements HiCDataSource, Runnable {
                     long position2 = Long.parseLong(parts[6]);
                     int strand2 = Integer.parseInt(parts[7]);
                     int fragment2 = Integer.parseInt(parts[8]);
-
-                    HiCRead newRead = new HiCRead(name, chromosome1, position1,
-                                                  strand1, fragment1,
-                                                  chromosome2, position2,
-                                                  strand2, fragment2);
-                    return newRead;
+                    
+                    if (chromosome1 != 0 && chromosome2 != 0) {
+                        HiCRead newRead = new HiCRead(name, chromosome1,
+                                                      position1, strand1,
+                                                      fragment1, chromosome2,
+                                                      position2, strand2,
+                                                      fragment2);
+                        return newRead;
+                    }
 
                 } catch (NumberFormatException e) {
                     System.err.println("Failed to parse line " + line

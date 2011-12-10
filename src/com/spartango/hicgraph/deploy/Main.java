@@ -1,12 +1,10 @@
 package com.spartango.hicgraph.deploy;
 
-import com.spartango.hicgraph.analysis.Clusterer;
-import com.spartango.hicgraph.analysis.GNClusterer;
 import com.spartango.hicgraph.data.BinaryGraphBuilder;
 import com.spartango.hicgraph.data.GraphConsumer;
 import com.spartango.hicgraph.data.gene.GeneBinner;
-import com.spartango.hicgraph.data.raw.ControlDataSource;
 import com.spartango.hicgraph.data.raw.HiCDataSource;
+import com.spartango.hicgraph.data.raw.HiCParser;
 import com.spartango.hicgraph.model.ChromatinGraph;
 import com.spartango.hicgraph.model.ChromatinLocation;
 import com.spartango.hicgraph.visualization.GraphImageRenderer;
@@ -15,17 +13,17 @@ public class Main {
 
     public static void main(String[] args) {
         // Setup data source
-        //HiCDataSource dataSource = new HiCParser(
-        //                                        "/Volumes/DarkIron/HiC Data/raw/GSM455133_30E0LAAXX.1.maq.hic.summary.binned.txt");
+        HiCDataSource dataSource = new HiCParser(
+                                                 "/Volumes/DarkIron/HiC Data/raw/139140.txt");
 
-        GeneBinner binner = new GeneBinner(5000);
-        HiCDataSource dataSource = new ControlDataSource(2000, 1);
+        GeneBinner binner = new GeneBinner(2000);
+        // HiCDataSource dataSource = new ControlDataSource(2000, 1);
 
         // Setup Graph Pipe
         BinaryGraphBuilder builder = new BinaryGraphBuilder();
 
         // Clusterer
-        Clusterer clusterer = new GNClusterer(30);
+        // Clusterer clusterer = new GNClusterer(30);
 
         // Assemble pipes
         dataSource.addConsumer(binner);
@@ -36,9 +34,10 @@ public class Main {
             public void onGraphBuilt(ChromatinGraph graph) {
                 for (ChromatinLocation l : graph.getVertices())
                     System.out.println("> " + l);
+                
                 GraphImageRenderer renderer = new GraphImageRenderer(graph,
                                                                      8128);
-                renderer.saveImage("/Volumes/DarkIron/HiC Data/genes.png");
+                renderer.saveImage("/Volumes/DarkIron/HiC Data/genes_l.png");
                 System.exit(0);
             }
         });
