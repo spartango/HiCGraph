@@ -11,7 +11,6 @@ import com.spartango.hicgraph.model.ChromatinRelation;
 
 public class BinaryGraphBuilder implements GraphBuilder, Runnable {
 
-    private int                    binSize;
     private ChromatinGraph         graph;
     private GraphConsumer          consumer;
 
@@ -23,12 +22,11 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
 
     private ReadFilter             filter;
 
-    public BinaryGraphBuilder(int binSize) {
-        this(binSize, null);
+    public BinaryGraphBuilder() {
+        this(null);
     }
 
-    public BinaryGraphBuilder(int binSize, ReadFilter f) {
-        this.binSize = binSize;
+    public BinaryGraphBuilder(ReadFilter f) {
         graph = new ChromatinGraph();
         consumer = null;
 
@@ -45,20 +43,16 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
         // Filter if necessary
         if (filter == null || filter.check(read)) {
 
-            // Bin the read positions
-            long firstReadPosition = bin(read.getFirstPosition());
-            long secondReadPosition = bin(read.getSecondPosition());
-
             // Prevent Self links, these are meaningless
-            if (firstReadPosition != secondReadPosition) {
+            if (read.getFirstPosition() != read.getSecondPosition()) {
                 // Generate a node for each side (if none exists)
                 ChromatinLocation firstLoc = new ChromatinLocation(
                                                                    read.getFirstChromosome(),
-                                                                   firstReadPosition,
+                                                                   read.getFirstPosition(),
                                                                    read.getFirstStrand());
                 ChromatinLocation secondLoc = new ChromatinLocation(
                                                                     read.getSecondChromosome(),
-                                                                    secondReadPosition,
+                                                                    read.getSecondPosition(),
                                                                     read.getSecondStrand());
                 graph.addVertex(firstLoc);
                 graph.addVertex(secondLoc);
@@ -72,16 +66,10 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
         }
     }
 
-    private long bin(long target) {
-        // TODO implement intelligent binning
-
-        // divide by binSize and floor
-        return (target / binSize) * binSize;
-    }
-
     @Override
     public void onReadingStarted(BlockingQueue<HiCRead> readQueue) {
         source = readQueue;
+        sourceComplete = false;
         
         buildThread = new Thread(this);
         
@@ -130,7 +118,7 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
                 }
 
             } catch (InterruptedException e) {
-                System.err.println("Interrupted while polling for data");
+                System.err.println("Builder interrupted while polling for data");
             }
 
         }

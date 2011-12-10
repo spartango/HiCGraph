@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
-
 public class HiCParser implements HiCDataSource, Runnable {
 
     private String          sourceFile;
@@ -18,11 +17,18 @@ public class HiCParser implements HiCDataSource, Runnable {
     private Thread          readerThread;
     private List<HiCRead>   reads;
 
+    private boolean         cacheReads;
+
     public HiCParser(String filename) {
+        this(filename, false);
+    }
+
+    public HiCParser(String filename, boolean cacheReads) {
         sourceFile = filename;
         reading = false;
         consumer = null;
         reads = new LinkedList<HiCRead>();
+        this.cacheReads = cacheReads;
     }
 
     public static HiCRead parseLine(String line) {
@@ -112,7 +118,9 @@ public class HiCParser implements HiCDataSource, Runnable {
                 HiCRead read = parseLine(line);
                 if (read != null) {
                     newReads.put(read);
-                    reads.add(read);
+                    if (cacheReads) {
+                        reads.add(read);
+                    }
                     notifyRead(read);
                 }
 
@@ -132,6 +140,7 @@ public class HiCParser implements HiCDataSource, Runnable {
         }
         reading = false;
         notifyComplete();
+
     }
 
     private void notifyComplete() {

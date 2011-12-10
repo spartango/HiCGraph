@@ -2,6 +2,8 @@ package com.spartango.hicgraph.data.raw;
 
 import java.io.Serializable;
 
+import uk.ac.roslin.ensembl.model.core.Gene;
+
 public class HiCRead implements Serializable {
 
     /**
@@ -15,12 +17,13 @@ public class HiCRead implements Serializable {
     private final long        firstPosition;
     private final int         firstStrand;
     private final int         firstRestrictionFragment;
+    private Gene              firstGene;
 
     private final int         secondChromosome;
     private final long        secondPosition;
-
     private final int         secondStrand;
     private final int         secondRestrictionFragment;
+    private Gene              secondGene;
 
     public HiCRead(String name,
                    int firstChromosome,
@@ -77,6 +80,14 @@ public class HiCRead implements Serializable {
 
     public long getSecondPosition() {
         return secondPosition;
+    }
+
+    public Gene getSecondGene() {
+        return secondGene;
+    }
+
+    public void setSecondGene(Gene secondGene) {
+        this.secondGene = secondGene;
     }
 
 }
