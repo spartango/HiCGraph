@@ -1,52 +1,61 @@
 package com.spartango.hicgraph.deploy;
 
-import java.util.Set;
-
-import com.spartango.hicgraph.analysis.ClusterConsumer;
 import com.spartango.hicgraph.analysis.Clusterer;
 import com.spartango.hicgraph.analysis.GNClusterer;
 import com.spartango.hicgraph.data.BinaryGraphBuilder;
-import com.spartango.hicgraph.data.filters.IntrachromosomalFilter;
+import com.spartango.hicgraph.data.GraphConsumer;
 import com.spartango.hicgraph.data.gene.GeneBinner;
+import com.spartango.hicgraph.data.raw.ControlDataSource;
 import com.spartango.hicgraph.data.raw.HiCDataSource;
-import com.spartango.hicgraph.data.raw.HiCParser;
+import com.spartango.hicgraph.model.ChromatinGraph;
 import com.spartango.hicgraph.model.ChromatinLocation;
+import com.spartango.hicgraph.visualization.GraphImageRenderer;
 
 public class Main {
 
     public static void main(String[] args) {
         // Setup data source
-        HiCDataSource dataSource = new HiCParser(
-                                                 "/Volumes/DarkIron/HiC Data/short_data.txt");
+        //HiCDataSource dataSource = new HiCParser(
+        //                                        "/Volumes/DarkIron/HiC Data/raw/GSM455133_30E0LAAXX.1.maq.hic.summary.binned.txt");
 
-        GeneBinner binner = new GeneBinner(500);
-        // HiCDataSource dataSource = new ControlDataSource(1350, 1);
+        GeneBinner binner = new GeneBinner(5000);
+        HiCDataSource dataSource = new ControlDataSource(2000, 1);
 
         // Setup Graph Pipe
-        BinaryGraphBuilder builder = new BinaryGraphBuilder(
-                                                            new IntrachromosomalFilter(
-                                                                                       1));
+        BinaryGraphBuilder builder = new BinaryGraphBuilder();
 
         // Clusterer
-        Clusterer clusterer = new GNClusterer(300);
+        Clusterer clusterer = new GNClusterer(30);
 
         // Assemble pipes
         dataSource.addConsumer(binner);
         binner.addConsumer(builder);
-        builder.addConsumer(clusterer);
-
-        clusterer.addConsumer(new ClusterConsumer() {
+        builder.addConsumer(new GraphConsumer() {
 
             @Override
-            public void onClusteringComplete(Set<Set<ChromatinLocation>> clusters) {
-                System.out.println(clusters.size() + " clusters found");
-
-                for (Set<ChromatinLocation> cluster : clusters) {
-                    System.out.println("---\n" + cluster + "\n---\n");
-                }
+            public void onGraphBuilt(ChromatinGraph graph) {
+                for (ChromatinLocation l : graph.getVertices())
+                    System.out.println("> " + l);
+                GraphImageRenderer renderer = new GraphImageRenderer(graph,
+                                                                     8128);
+                renderer.saveImage("/Volumes/DarkIron/HiC Data/genes.png");
                 System.exit(0);
             }
         });
+
+        /*
+         * builder.addConsumer(clusterer);
+         * 
+         * clusterer.addConsumer(new ClusterConsumer() {
+         * 
+         * @Override public void
+         * onClusteringComplete(Set<Set<ChromatinLocation>> clusters) {
+         * System.out.println(clusters.size() + " clusters found");
+         * 
+         * for (Set<ChromatinLocation> cluster : clusters) {
+         * System.out.println("---\n" + cluster + "\n---\n"); } System.exit(0);
+         * } });
+         */
 
         // Start pipes
         dataSource.startReading();

@@ -49,11 +49,13 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
                 ChromatinLocation firstLoc = new ChromatinLocation(
                                                                    read.getFirstChromosome(),
                                                                    read.getFirstPosition(),
-                                                                   read.getFirstStrand());
+                                                                   read.getFirstStrand(),
+                                                                   read.getFirstGene());
                 ChromatinLocation secondLoc = new ChromatinLocation(
                                                                     read.getSecondChromosome(),
                                                                     read.getSecondPosition(),
-                                                                    read.getSecondStrand());
+                                                                    read.getSecondStrand(), 
+                                                                    read.getSecondGene());
                 graph.addVertex(firstLoc);
                 graph.addVertex(secondLoc);
 
@@ -70,9 +72,9 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
     public void onReadingStarted(BlockingQueue<HiCRead> readQueue) {
         source = readQueue;
         sourceComplete = false;
-        
+
         buildThread = new Thread(this);
-        
+
         // Start the build thread
         buildThread.start();
     }

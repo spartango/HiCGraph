@@ -146,7 +146,8 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
         // Given a read
 
         // Sanity check for real chromosomes:
-        if (read == null || (read.getFirstChromosome() == 0 || read.getSecondChromosome() == 0)) {
+        if (read == null
+            || (read.getFirstChromosome() == 0 || read.getSecondChromosome() == 0)) {
             return null;
         }
 
@@ -166,8 +167,6 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
 
         if (firstPlacedGene != null) {
             firstPosition = CachedChromosome.getGeneStart(firstPlacedGene);
-            System.out.println("Found gene: "
-                               + firstPlacedGene.getDescription());
         } else {
             firstPosition = bin(read.getFirstPosition());
         }
@@ -176,8 +175,6 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
 
         if (secondPlacedGene != null) {
             secondPosition = CachedChromosome.getGeneStart(secondPlacedGene);
-            System.out.println("Found gene: "
-                               + secondPlacedGene.getDescription());
         } else {
             secondPosition = bin(read.getSecondPosition());
         }

@@ -84,6 +84,10 @@ public class HiCRead implements Serializable {
         return firstRestrictionFragment;
     }
 
+    public Gene getFirstGene() {
+        return firstGene;
+    }
+
     public int getSecondChromosome() {
         return secondChromosome;
     }

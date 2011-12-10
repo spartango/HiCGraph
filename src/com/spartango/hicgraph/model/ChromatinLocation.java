@@ -1,11 +1,13 @@
 package com.spartango.hicgraph.model;
 
+import uk.ac.roslin.ensembl.model.core.Gene;
+
 public class ChromatinLocation {
     // Strand types
-    public static final int   WATSON             = 0;
-    public static final int   CRICK              = 1;
+    public static final int    WATSON             = 0;
+    public static final int    CRICK              = 1;
 
-    public static final int   NUM_CHROMOSOMES    = 24;
+    public static final int    NUM_CHROMOSOMES    = 24;
 
     public static final long[] CHROMOSOME_LENGTHS = {
             249250621,
@@ -31,16 +33,25 @@ public class ChromatinLocation {
             48129895,
             51304566,
             155270560,
-            59373566                            };
+            59373566                             };
 
-    private final int         chromosome;
-    private final long        position;
-    private final int         strand;
+    private final int          chromosome;
+    private final long         position;
+    private final int          strand;
+    private final Gene         gene;
 
     public ChromatinLocation(int chromosome, long position, int strand) {
+        this(chromosome, position, strand, null);
+    }
+
+    public ChromatinLocation(int chromosome,
+                             long position,
+                             int strand,
+                             Gene gene) {
         this.chromosome = chromosome;
         this.position = position;
         this.strand = strand;
+        this.gene = gene;
     }
 
     @Override
@@ -80,9 +91,14 @@ public class ChromatinLocation {
     public int getStrand() {
         return strand;
     }
-    
+
+    public Gene getGene() {
+        return gene;
+    }
+
     @Override
     public String toString() {
-        return "["+chromosome+":"+position+"]";
+        return "[" + chromosome + ":" + position
+               + (gene != null ? ": " + gene.getDescription() : "+") + "]";
     }
 }
