@@ -7,6 +7,7 @@ import com.spartango.hicgraph.analysis.Clusterer;
 import com.spartango.hicgraph.analysis.GNClusterer;
 import com.spartango.hicgraph.data.BinaryGraphBuilder;
 import com.spartango.hicgraph.data.filters.IntrachromosomalFilter;
+import com.spartango.hicgraph.data.gene.GeneBinner;
 import com.spartango.hicgraph.data.raw.HiCDataSource;
 import com.spartango.hicgraph.data.raw.HiCParser;
 import com.spartango.hicgraph.model.ChromatinLocation;
@@ -17,11 +18,12 @@ public class Main {
         // Setup data source
         HiCDataSource dataSource = new HiCParser(
                                                  "/Volumes/DarkIron/HiC Data/short_data.txt");
+
+        GeneBinner binner = new GeneBinner(500);
         // HiCDataSource dataSource = new ControlDataSource(1350, 1);
 
         // Setup Graph Pipe
         BinaryGraphBuilder builder = new BinaryGraphBuilder(
-                                                            50000,
                                                             new IntrachromosomalFilter(
                                                                                        1));
 
@@ -29,7 +31,8 @@ public class Main {
         Clusterer clusterer = new GNClusterer(300);
 
         // Assemble pipes
-        dataSource.addConsumer(builder);
+        dataSource.addConsumer(binner);
+        binner.addConsumer(builder);
         builder.addConsumer(clusterer);
 
         clusterer.addConsumer(new ClusterConsumer() {

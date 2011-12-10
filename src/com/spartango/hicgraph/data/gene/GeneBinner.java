@@ -6,7 +6,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import uk.ac.roslin.ensembl.model.core.Gene;
+
+import com.spartango.ensembl.CachedChromosome;
 import com.spartango.ensembl.EnsemblConnection;
+import com.spartango.ensembl.EnsemblException;
 import com.spartango.hicgraph.data.raw.HiCDataConsumer;
 import com.spartango.hicgraph.data.raw.HiCDataSource;
 import com.spartango.hicgraph.data.raw.HiCRead;
@@ -42,7 +46,11 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
         running = false;
 
         reads = new LinkedList<HiCRead>();
-        ensemblLink = new EnsemblConnection();
+        try {
+            ensemblLink = new EnsemblConnection();
+        } catch (EnsemblException e) {
+            ensemblLink = null;
+        }
 
     }
 
@@ -135,13 +143,52 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
     }
 
     private HiCRead handleRead(HiCRead read) {
-        // Given a read 
-        
+        // Given a read
+
+        // Sanity check for real chromosomes:
+        if (read == null || (read.getFirstChromosome() == 0 || read.getSecondChromosome() == 0)) {
+            return null;
+        }
+
         // For each side
-        // See if there's a gene there
-        // use that gene's start site
-        
-        // else bin it with the fallback window
+        Gene firstPlacedGene = null;
+        Gene secondPlacedGene = null;
+        if (ensemblLink != null) {
+            // See if there's a gene there
+            CachedChromosome firstChromosome = ensemblLink.getChromosome(read.getFirstChromosome());
+            firstPlacedGene = firstChromosome.getGeneForPosition((int) read.getFirstPosition());
+
+            CachedChromosome secondChromosome = ensemblLink.getChromosome(read.getSecondChromosome());
+            secondPlacedGene = secondChromosome.getGeneForPosition((int) read.getSecondPosition());
+        }
+
+        long firstPosition;
+
+        if (firstPlacedGene != null) {
+            firstPosition = CachedChromosome.getGeneStart(firstPlacedGene);
+            System.out.println("Found gene: "
+                               + firstPlacedGene.getDescription());
+        } else {
+            firstPosition = bin(read.getFirstPosition());
+        }
+
+        long secondPosition;
+
+        if (secondPlacedGene != null) {
+            secondPosition = CachedChromosome.getGeneStart(secondPlacedGene);
+            System.out.println("Found gene: "
+                               + secondPlacedGene.getDescription());
+        } else {
+            secondPosition = bin(read.getSecondPosition());
+        }
+
+        return new HiCRead(read.getName(), read.getFirstChromosome(),
+                           firstPosition, read.getFirstStrand(),
+                           read.getFirstRestrictionFragment(), firstPlacedGene,
+                           read.getSecondChromosome(), secondPosition,
+                           read.getSecondStrand(),
+                           read.getSecondRestrictionFragment(),
+                           secondPlacedGene);
     }
 
     private void notifyStart(LinkedBlockingQueue<HiCRead> newReads) {
@@ -166,6 +213,10 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
 
     @Override
     public void onNewRead(HiCRead newRead) {
+    }
+
+    private long bin(long position) {
+        return fallbackBinSize * (position / fallbackBinSize);
     }
 
 }

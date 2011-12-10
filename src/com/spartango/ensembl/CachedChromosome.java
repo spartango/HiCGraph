@@ -18,7 +18,7 @@ public class CachedChromosome {
 
     public Gene getGeneForPosition(int position) {
         // First try to find the gene in the cache
-
+        // TODO 
         // If its not there, hit the db
         return null;
     }
