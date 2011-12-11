@@ -54,7 +54,7 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
                 ChromatinLocation secondLoc = new ChromatinLocation(
                                                                     read.getSecondChromosome(),
                                                                     read.getSecondPosition(),
-                                                                    read.getSecondStrand(), 
+                                                                    read.getSecondStrand(),
                                                                     read.getSecondGene());
                 graph.addVertex(firstLoc);
                 graph.addVertex(secondLoc);
@@ -106,8 +106,10 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
 
     @Override
     public void run() {
+        int reads = 0;
         running = true;
-        System.out.println("Builder Started");
+        System.out.println("Builder Started: "
+                           + Thread.currentThread().getName());
         while (running && source != null) {
             // Try to grab an element off of the sourceQueue
             try {
@@ -115,6 +117,7 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
 
                 if (read != null) {
                     addRead(read);
+                    reads++;
                 } else if (sourceComplete) {
                     running = false;
                 }
@@ -124,6 +127,7 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
             }
 
         }
+        System.out.println("Builder Finished: " + reads + " reads");
         notifyComplete();
     }
 

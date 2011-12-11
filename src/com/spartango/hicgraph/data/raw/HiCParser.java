@@ -94,8 +94,9 @@ public class HiCParser implements HiCDataSource, Runnable {
     }
 
     public void run() {
-        System.out.println("Parser Started");
-
+        System.out.println("Parser Started: "
+                           + Thread.currentThread().getName());
+        int lines = 0;
         // Open file for read
         BufferedReader reader = null;
         try {
@@ -122,6 +123,7 @@ public class HiCParser implements HiCDataSource, Runnable {
                         reads.add(read);
                     }
                     notifyRead(read);
+                    lines++;
                 }
 
             }
@@ -139,6 +141,7 @@ public class HiCParser implements HiCDataSource, Runnable {
             }
         }
         reading = false;
+        System.out.println("Parser Finished: " + lines + " reads");
         notifyComplete();
 
     }

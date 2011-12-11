@@ -84,13 +84,14 @@ public class EnsemblParser {
                                + lines);
         }
 
+        System.out.println("Completed Genome parsing: " + lines + " lines read");
         return genome;
     }
 
     private static String getGeneNameFromAnnotation(String annotations) {
         String[] parts = annotations.split(" ");
-        if (parts.length > 7)
-            return parts[7].substring(0, parts[7].length());
+        if (parts.length > 8)
+            return parts[8].substring(0, parts[8].length() - 1);
         else {
             System.err.println("No gene name in annotations");
             return null;

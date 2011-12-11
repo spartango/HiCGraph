@@ -99,7 +99,8 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
     @Override
     public void run() {
         running = true;
-        System.out.println("Binner Thread Started");
+        System.out.println("Binner Started: "
+                           + Thread.currentThread().getName());
 
         while (running && source != null) {
             // Try to grab an element off of the sourceQueue
@@ -162,6 +163,8 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
         long firstPosition;
 
         if (firstPlacedGene != null) {
+            // System.out.println("Found gene: "
+            // + firstPlacedGene.getDescription());
             firstPosition = firstPlacedGene.getStart();
         } else {
             firstPosition = bin(read.getFirstPosition());
@@ -170,6 +173,8 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
         long secondPosition;
 
         if (secondPlacedGene != null) {
+            // System.out.println("Found gene: "
+            // + secondPlacedGene.getDescription());
             secondPosition = secondPlacedGene.getStart();
         } else {
             secondPosition = bin(read.getSecondPosition());
