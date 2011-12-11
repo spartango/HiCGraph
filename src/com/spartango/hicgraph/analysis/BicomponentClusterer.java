@@ -1,19 +1,18 @@
 package com.spartango.hicgraph.analysis;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.spartango.hicgraph.model.ChromatinGraph;
 import com.spartango.hicgraph.model.ChromatinLocation;
+import com.spartango.hicgraph.model.ChromatinRelation;
 
-import edu.uci.ics.jung.algorithms.metrics.Metrics;
+public class BicomponentClusterer
+        extends
+        edu.uci.ics.jung.algorithms.cluster.BicomponentClusterer<ChromatinLocation, ChromatinRelation>
+                                                                                                      implements
+                                                                                                      Clusterer,
+                                                                                                      Runnable {
 
-public class CoefficientClusterer implements Clusterer, Runnable {
-
-    private double          threshold;
     private ChromatinGraph  source;
 
     private ClusterConsumer consumer;
@@ -21,8 +20,7 @@ public class CoefficientClusterer implements Clusterer, Runnable {
     private boolean         running;
     private Thread          clusterThread;
 
-    public CoefficientClusterer(double threshold) {
-        this.threshold = threshold;
+    public BicomponentClusterer() {
         consumer = null;
         source = null;
         running = false;
@@ -31,29 +29,7 @@ public class CoefficientClusterer implements Clusterer, Runnable {
     @Override
     public Set<Set<ChromatinLocation>> findClusters(ChromatinGraph graph) {
         // Get clustering coefficients
-        Map<ChromatinLocation, Double> coefficients = Metrics.clusteringCoefficients(graph);
-
-        List<ChromatinLocation> thresholded = new LinkedList<ChromatinLocation>();
-
-        // Pull up neighbors as "cluster"
-        Set<Set<ChromatinLocation>> clusters = new HashSet<Set<ChromatinLocation>>();
-
-        // Filter based on threshold & distribution
-        for (ChromatinLocation key : coefficients.keySet()) {
-            if (coefficients.get(key) >= threshold) {
-                thresholded.add(key);
-
-                Set<ChromatinLocation> cluster = new HashSet<ChromatinLocation>();
-                cluster.add(key);
-                cluster.addAll(graph.getNeighbors(key));
-                System.out.println("ClusterHead: " + coefficients.get(key)
-                                   + " -> " + key + " => "
-                                   + graph.getNeighbors(key));
-                clusters.add(cluster);
-            }
-        }
-
-        return clusters;
+        return transform(graph);
     }
 
     @Override
@@ -94,8 +70,7 @@ public class CoefficientClusterer implements Clusterer, Runnable {
         }
     }
 
-    private void notifyComplete(Set<Set<ChromatinLocation>> clusters,
-                                ChromatinGraph graph) {
+    private void notifyComplete(Set<Set<ChromatinLocation>> clusters, ChromatinGraph graph) {
         if (consumer != null) {
             consumer.onClusteringComplete(clusters, graph);
         }

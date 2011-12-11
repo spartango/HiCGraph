@@ -55,7 +55,7 @@ public class GNClusterer extends
                                + " nodes & " + source.getEdgeCount() + " edges");
 
             Set<Set<ChromatinLocation>> clusters = findClusters(source);
-            notifyComplete(clusters);
+            notifyComplete(clusters, source);
 
             running = false;
         }
@@ -71,9 +71,10 @@ public class GNClusterer extends
         consumer = null;
     }
 
-    private void notifyComplete(Set<Set<ChromatinLocation>> clusters) {
+    private void notifyComplete(Set<Set<ChromatinLocation>> clusters,
+                                ChromatinGraph graph) {
         if (consumer != null) {
-            consumer.onClusteringComplete(clusters);
+            consumer.onClusteringComplete(clusters, graph);
         }
     }
 }
