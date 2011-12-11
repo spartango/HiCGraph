@@ -16,51 +16,45 @@ public class HiCRead implements Serializable {
     private final int         firstChromosome;
     private final long        firstPosition;
     private final int         firstStrand;
-    private final int         firstRestrictionFragment;
     private final Gene        firstGene;
 
     private final int         secondChromosome;
     private final long        secondPosition;
     private final int         secondStrand;
-    private final int         secondRestrictionFragment;
     private final Gene        secondGene;
 
     public HiCRead(String name,
                    int firstChromosome,
                    long firstPosition,
                    int firstStrand,
-                   int firstRestrictionFragment,
                    int secondChromosome,
                    long secondPosition,
-                   int secondStrand,
-                   int secondRestrictionFragment) {
-        this(name, firstChromosome, firstPosition, firstStrand,
-             firstRestrictionFragment, null, secondChromosome, secondPosition,
-             secondRestrictionFragment, secondStrand, null);
+                   int secondStrand) {
+        
+        this(name, firstChromosome, firstPosition, firstStrand, null,
+             secondChromosome, secondPosition, secondStrand, null);
     }
 
     public HiCRead(String name,
                    int firstChromosome,
                    long firstPosition,
                    int firstStrand,
-                   int firstRestrictionFragment,
+
                    Gene firstGene,
                    int secondChromosome,
                    long secondPosition,
                    int secondStrand,
-                   int secondRestrictionFragment,
+
                    Gene secondGene) {
 
         this.name = name;
         this.firstChromosome = firstChromosome;
         this.firstPosition = firstPosition;
         this.firstStrand = firstStrand;
-        this.firstRestrictionFragment = firstRestrictionFragment;
         this.firstGene = firstGene;
         this.secondChromosome = secondChromosome;
         this.secondPosition = secondPosition;
         this.secondStrand = secondStrand;
-        this.secondRestrictionFragment = secondRestrictionFragment;
         this.secondGene = secondGene;
     }
 
@@ -80,10 +74,6 @@ public class HiCRead implements Serializable {
         return firstStrand;
     }
 
-    public int getFirstRestrictionFragment() {
-        return firstRestrictionFragment;
-    }
-
     public Gene getFirstGene() {
         return firstGene;
     }
@@ -94,10 +84,6 @@ public class HiCRead implements Serializable {
 
     public int getSecondStrand() {
         return secondStrand;
-    }
-
-    public int getSecondRestrictionFragment() {
-        return secondRestrictionFragment;
     }
 
     public long getSecondPosition() {

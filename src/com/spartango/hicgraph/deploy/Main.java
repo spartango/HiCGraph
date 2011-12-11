@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
         // Setup data source
         HiCDataSource dataSource = new HiCParser(
-                                                 "/Volumes/DarkIron/HiC Data/raw/139140.txt");
+                                                 "/Volumes/DarkIron/HiC Data/raw/GSM455140_428EGAAXX.8.maq.hic.summary.binned.txt");
 
         GeneBinner binner = new GeneBinner(2000);
         // HiCDataSource dataSource = new ControlDataSource(2000, 1);
@@ -37,7 +37,7 @@ public class Main {
                 
                 GraphImageRenderer renderer = new GraphImageRenderer(graph,
                                                                      8128);
-                renderer.saveImage("/Volumes/DarkIron/HiC Data/genes_l.png");
+                renderer.saveImage("/Volumes/DarkIron/HiC Data/genes_140.png");
                 System.exit(0);
             }
         });

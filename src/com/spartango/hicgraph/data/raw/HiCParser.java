@@ -44,18 +44,15 @@ public class HiCParser implements HiCDataSource, Runnable {
                     int chromosome1 = Integer.parseInt(parts[1]);
                     long position1 = Long.parseLong(parts[2]);
                     int strand1 = Integer.parseInt(parts[3]);
-                    int fragment1 = Integer.parseInt(parts[4]);
                     int chromosome2 = Integer.parseInt(parts[5]);
                     long position2 = Long.parseLong(parts[6]);
                     int strand2 = Integer.parseInt(parts[7]);
-                    int fragment2 = Integer.parseInt(parts[8]);
-                    
+
                     if (chromosome1 != 0 && chromosome2 != 0) {
                         HiCRead newRead = new HiCRead(name, chromosome1,
                                                       position1, strand1,
-                                                      fragment1, chromosome2,
-                                                      position2, strand2,
-                                                      fragment2);
+                                                      chromosome2, position2,
+                                                      strand2);
                         return newRead;
                     }
 

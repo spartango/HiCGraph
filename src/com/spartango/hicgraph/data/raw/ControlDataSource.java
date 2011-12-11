@@ -89,21 +89,18 @@ public class ControlDataSource implements HiCDataSource, Runnable {
         long firstPosition = Math.round(ChromatinLocation.CHROMOSOME_LENGTHS[firstChromosome]
                                         * Math.random());
         int firstStrand = 0;
-        int firstRestrictionFragment = 0;
         int secondChromosome = (chromosomeRestriction == -1 ? (int) Math.round(Math.random()
                                                                                * (ChromatinLocation.NUM_CHROMOSOMES - 1))
                                                            : chromosomeRestriction);
         long secondPosition = Math.round(ChromatinLocation.CHROMOSOME_LENGTHS[secondChromosome]
                                          * Math.random());
         int secondStrand = 0;
-        int secondRestrictionFragment = 0;
         System.out.println("Generated Read: " + firstChromosome + ":"
                            + firstPosition + " -> " + secondChromosome + ":"
                            + secondPosition);
         HiCRead newRead = new HiCRead(name, firstChromosome, firstPosition,
-                                      firstStrand, firstRestrictionFragment,
-                                      secondChromosome, secondPosition,
-                                      secondStrand, secondRestrictionFragment);
+                                      firstStrand, secondChromosome,
+                                      secondPosition, secondStrand);
 
         return newRead;
     }

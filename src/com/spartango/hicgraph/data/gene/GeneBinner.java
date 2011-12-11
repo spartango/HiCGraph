@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import uk.ac.roslin.ensembl.model.core.Gene;
@@ -16,18 +17,19 @@ import com.spartango.hicgraph.data.raw.HiCDataSource;
 import com.spartango.hicgraph.data.raw.HiCRead;
 
 public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
+    public static final int        NUM_THREADS = 1;
 
     private HiCDataConsumer        consumer;
 
     private BlockingQueue<HiCRead> source;
     private boolean                sourceComplete;
 
-    private Thread                 buildThread;
+    private ThreadPoolExecutor     threadPool;
     private boolean                running;
 
     private boolean                cacheReads;
     private List<HiCRead>          reads;
-
+    LinkedBlockingQueue<HiCRead>   newReads;
     private int                    fallbackBinSize;
     private EnsemblConnection      ensemblLink;
 
@@ -44,6 +46,10 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
 
         sourceComplete = false;
         running = false;
+
+        threadPool = new ThreadPoolExecutor(NUM_THREADS, NUM_THREADS, 1000,
+                                            TimeUnit.MILLISECONDS,
+                                            new LinkedBlockingQueue<Runnable>());
 
         reads = new LinkedList<HiCRead>();
         try {
@@ -68,9 +74,13 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
     public void startReading() {
         if (!running && source != null) {
             reads.clear();
+            // init Read Vector
+            newReads = new LinkedBlockingQueue<HiCRead>();
+            notifyStart(newReads);
 
-            buildThread = new Thread(this);
-            buildThread.start();
+            for (int i = 0; i < NUM_THREADS; i++) {
+                threadPool.execute(this);
+            }
         }
     }
 
@@ -78,9 +88,7 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
     public void stopReading() {
         // Kill any run in progress
         running = false;
-        if (buildThread != null) {
-            buildThread.interrupt();
-        }
+        threadPool.shutdownNow();
     }
 
     @Override
@@ -97,11 +105,7 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
     @Override
     public void run() {
         running = true;
-        System.out.println("Binner Started");
-
-        // init Read Vector
-        LinkedBlockingQueue<HiCRead> newReads = new LinkedBlockingQueue<HiCRead>();
-        notifyStart(newReads);
+        System.out.println("Binner Thread Started");
 
         while (running && source != null) {
             // Try to grab an element off of the sourceQueue
@@ -181,10 +185,8 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
 
         return new HiCRead(read.getName(), read.getFirstChromosome(),
                            firstPosition, read.getFirstStrand(),
-                           read.getFirstRestrictionFragment(), firstPlacedGene,
-                           read.getSecondChromosome(), secondPosition,
-                           read.getSecondStrand(),
-                           read.getSecondRestrictionFragment(),
+                           firstPlacedGene, read.getSecondChromosome(),
+                           secondPosition, read.getSecondStrand(),
                            secondPlacedGene);
     }
 

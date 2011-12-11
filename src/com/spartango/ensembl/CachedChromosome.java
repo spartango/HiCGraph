@@ -3,6 +3,10 @@ package com.spartango.ensembl;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import uk.ac.roslin.ensembl.exception.DAOException;
 import uk.ac.roslin.ensembl.model.core.Chromosome;
@@ -10,42 +14,41 @@ import uk.ac.roslin.ensembl.model.core.Gene;
 
 public class CachedChromosome {
 
-    private Chromosome             rawChromosome;
-    // Key is start site
-    private TreeMap<Integer, Gene> geneCache;
+    private Chromosome rawChromosome;
+
+    private Lock       chromosomeLock;
 
     public CachedChromosome(Chromosome c) {
         rawChromosome = c;
-        geneCache = new TreeMap<Integer, Gene>();
+        chromosomeLock = new ReentrantLock();
     }
 
     public Gene getGeneForPosition(int position) {
-        // First try to find the gene in the cache
-        Map.Entry<Integer, Gene> candidate = geneCache.floorEntry(position);
-        // Check that the position is within the gene length
-        if (candidate != null && position < getGeneEnd(candidate.getValue())) {
-            return candidate.getValue();
 
+        // If its not there, hit the db
+        List<? extends Gene> candidates = getCandidates(position);
+        if (!candidates.isEmpty()) {
+            // Cache the candidate
+            Gene first = candidates.get(0);
+            // cacheGene(first);
+            System.out.println(position + " => " + first.getDescription());
+
+            return first;
         } else {
-            // If its not there, hit the db
-            try {
-                List<? extends Gene> candidates = rawChromosome.getGenesOnRegion(position,
-                                                                                 position);
-                if (!candidates.isEmpty()) {
-                    // Cache the candidate
-                    Gene first = candidates.get(0);
-                    geneCache.put(getGeneStart(first), first);
-
-                    // System.out.println("Cached gene: " +
-                    // first.getDescription());
-
-                    return first;
-                }
-            } catch (DAOException e) {
-                System.err.println("Chromosome cache couldn't search Ensembl: DAO issue");
-            }
             return null;
         }
+    }
+
+    private List<? extends Gene> getCandidates(int position) {
+        List<? extends Gene> candidates = null;
+        chromosomeLock.lock();
+        try {
+            candidates = rawChromosome.getGenesOnRegion(position, position);
+        } catch (DAOException e) {
+            System.err.println("Chromosome cache couldn't search Ensembl: DAO issue");
+        }
+        chromosomeLock.unlock();
+        return candidates;
     }
 
     public static int getGeneStart(Gene target) {
