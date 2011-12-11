@@ -1,5 +1,8 @@
 package com.spartango.hicgraph.analysis;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -8,43 +11,93 @@ import com.spartango.hicgraph.model.ChromatinLocation;
 
 import edu.uci.ics.jung.algorithms.metrics.Metrics;
 
-public class CoefficientClusterer implements Clusterer {
-    
-    private double threshold;
-    
+public class CoefficientClusterer implements Clusterer, Runnable {
+
+    private double          threshold;
+    private ChromatinGraph  source;
+
+    private ClusterConsumer consumer;
+
+    private boolean         running;
+    private Thread          clusterThread;
+
     public CoefficientClusterer(double threshold) {
         this.threshold = threshold;
+        consumer = null;
+        source = null;
+        running = false;
     }
 
     @Override
     public Set<Set<ChromatinLocation>> findClusters(ChromatinGraph graph) {
         // Get clustering coefficients
         Map<ChromatinLocation, Double> coefficients = Metrics.clusteringCoefficients(graph);
-        
-        // Filter based on threshold & distribution
-        
+
+        List<ChromatinLocation> thresholded = new LinkedList<ChromatinLocation>();
+
         // Pull up neighbors as "cluster"
-        
-        // TODO generate clusters from coefficient
-        return null;
+        Set<Set<ChromatinLocation>> clusters = new HashSet<Set<ChromatinLocation>>();
+
+        // Filter based on threshold & distribution
+        for (ChromatinLocation key : coefficients.keySet()) {
+            if (coefficients.get(key) >= threshold) {
+                thresholded.add(key);
+
+                Set<ChromatinLocation> cluster = new HashSet<ChromatinLocation>();
+                cluster.add(key);
+                cluster.addAll(graph.getNeighbors(key));
+                System.out.println("ClusterHead: " + coefficients.get(key)
+                                   + " -> " + key + " => "
+                                   + graph.getNeighbors(key));
+                clusters.add(cluster);
+            }
+        }
+
+        return clusters;
     }
 
     @Override
     public void onGraphBuilt(ChromatinGraph graph) {
-        // TODO Auto-generated method stub
-        
+        // Single entity in pipeline
+        if (!running) {
+
+            // Got a graph to cluster
+            source = graph;
+
+            // Spin up a thread to cluster
+            clusterThread = new Thread(this);
+            clusterThread.start();
+        }
     }
 
     @Override
     public void addConsumer(ClusterConsumer c) {
-        // TODO Auto-generated method stub
-        
+        consumer = c;
     }
 
     @Override
     public void removeConsumer(ClusterConsumer c) {
-        // TODO Auto-generated method stub
-        
+        consumer = null;
+    }
+
+    @Override
+    public void run() {
+        if (source != null) {
+            running = true;
+            System.out.println("Clusterer Started: " + source.getVertexCount()
+                               + " nodes & " + source.getEdgeCount() + " edges");
+
+            Set<Set<ChromatinLocation>> clusters = findClusters(source);
+            notifyComplete(clusters);
+
+            running = false;
+        }
+    }
+
+    private void notifyComplete(Set<Set<ChromatinLocation>> clusters) {
+        if (consumer != null) {
+            consumer.onClusteringComplete(clusters);
+        }
     }
 
 }

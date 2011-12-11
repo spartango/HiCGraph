@@ -1,7 +1,13 @@
 package com.spartango.hicgraph.deploy;
 
+import java.util.Set;
+
 import com.spartango.ensembl.model.Genome;
 import com.spartango.ensembl.raw.EnsemblParser;
+import com.spartango.hicgraph.analysis.ClusterConsumer;
+import com.spartango.hicgraph.analysis.Clusterer;
+import com.spartango.hicgraph.analysis.CoefficientClusterer;
+import com.spartango.hicgraph.analysis.GNClusterer;
 import com.spartango.hicgraph.data.BinaryGraphBuilder;
 import com.spartango.hicgraph.data.GraphConsumer;
 import com.spartango.hicgraph.data.filters.IntrachromosomalFilter;
@@ -17,7 +23,7 @@ public class Main {
     public static void main(String[] args) {
         // Setup data source
         HiCDataSource dataSource = new HiCParser(
-                                                 "/Volumes/DarkIron/HiC Data/raw/GSM455140_428EGAAXX.8.maq.hic.summary.binned.txt");
+                                                 "/Volumes/DarkIron/HiC Data/raw/139140.txt");
 
         Genome humanGenome = EnsemblParser.buildGenome("/Volumes/DarkIron/HiC Data/raw/Homo_sapiens.GRCh37.65.gtf");
 
@@ -29,39 +35,34 @@ public class Main {
                                                             new IntrachromosomalFilter());
 
         // Clusterer
-        // Clusterer clusterer = new GNClusterer(30);
+        Clusterer clusterer = new CoefficientClusterer(.66);
 
         // Assemble pipes
         dataSource.addConsumer(binner);
         binner.addConsumer(builder);
-        builder.addConsumer(new GraphConsumer() {
+        /*
+         * builder.addConsumer(new GraphConsumer() {
+         * 
+         * @Override public void onGraphBuilt(ChromatinGraph graph) { // for
+         * (ChromatinLocation l : graph.getVertices()) //
+         * System.out.println("> " + l);
+         * System.out.println(graph.getVertexCount() + " verticies & " +
+         * graph.getEdgeCount() + " edges"); GraphImageRenderer renderer = new
+         * GraphImageRenderer(graph, 8128);
+         * renderer.saveImage("/Volumes/DarkIron/HiC Data/genes_140.png");
+         * System.exit(0); } });
+         */
+
+        builder.addConsumer(clusterer);
+
+        clusterer.addConsumer(new ClusterConsumer() {
 
             @Override
-            public void onGraphBuilt(ChromatinGraph graph) {
-                // for (ChromatinLocation l : graph.getVertices())
-                // System.out.println("> " + l);
-                System.out.println(graph.getVertexCount() + " verticies & "
-                                   + graph.getEdgeCount() + " edges");
-                GraphImageRenderer renderer = new GraphImageRenderer(graph,
-                                                                     8128);
-                renderer.saveImage("/Volumes/DarkIron/HiC Data/genes_140.png");
+            public void onClusteringComplete(Set<Set<ChromatinLocation>> clusters) {
+                System.out.println(clusters.size() + " clusters found");
                 System.exit(0);
             }
         });
-
-        /*
-         * builder.addConsumer(clusterer);
-         * 
-         * clusterer.addConsumer(new ClusterConsumer() {
-         * 
-         * @Override public void
-         * onClusteringComplete(Set<Set<ChromatinLocation>> clusters) {
-         * System.out.println(clusters.size() + " clusters found");
-         * 
-         * for (Set<ChromatinLocation> cluster : clusters) {
-         * System.out.println("---\n" + cluster + "\n---\n"); } System.exit(0);
-         * } });
-         */
 
         // Start pipes
         dataSource.startReading();

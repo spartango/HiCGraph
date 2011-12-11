@@ -74,7 +74,8 @@ public class EnsemblParser {
                 }
                 lines++;
             }
-
+            System.out.println("Completed Genome parsing: " + lines + " -> "
+                               + genes.size());
             // Close the file
             reader.close();
         } catch (FileNotFoundException e1) {
@@ -84,7 +85,6 @@ public class EnsemblParser {
                                + lines);
         }
 
-        System.out.println("Completed Genome parsing: " + lines + " lines read");
         return genome;
     }
 

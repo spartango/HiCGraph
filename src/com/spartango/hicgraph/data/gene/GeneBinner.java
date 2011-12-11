@@ -167,7 +167,8 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
             // + firstPlacedGene.getDescription());
             firstPosition = firstPlacedGene.getStart();
         } else {
-            firstPosition = bin(read.getFirstPosition());
+            return null;
+            // firstPosition = bin(read.getFirstPosition());
         }
 
         long secondPosition;
@@ -177,7 +178,8 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
             // + secondPlacedGene.getDescription());
             secondPosition = secondPlacedGene.getStart();
         } else {
-            secondPosition = bin(read.getSecondPosition());
+            return null;
+            // secondPosition = bin(read.getSecondPosition());
         }
 
         return new HiCRead(read.getName(), read.getFirstChromosome(),

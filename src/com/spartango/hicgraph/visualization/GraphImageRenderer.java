@@ -16,17 +16,17 @@ import com.spartango.hicgraph.model.ChromatinGraph;
 import com.spartango.hicgraph.model.ChromatinLocation;
 import com.spartango.hicgraph.model.ChromatinRelation;
 
-import edu.uci.ics.jung.algorithms.layout.FRLayout;
+import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.visualization.VisualizationImageServer;
 
 public class GraphImageRenderer {
-    private FRLayout<ChromatinLocation, ChromatinRelation>                 layout;
+    private CircleLayout<ChromatinLocation, ChromatinRelation>             layout;
     private VisualizationImageServer<ChromatinLocation, ChromatinRelation> server;
     private int                                                            imageSize;
 
     public GraphImageRenderer(ChromatinGraph graph, int size) {
         imageSize = size;
-        layout = new FRLayout<ChromatinLocation, ChromatinRelation>(graph);
+        layout = new CircleLayout<ChromatinLocation, ChromatinRelation>(graph);
         server = new VisualizationImageServer<ChromatinLocation, ChromatinRelation>(
                                                                                     layout,
                                                                                     new Dimension(
