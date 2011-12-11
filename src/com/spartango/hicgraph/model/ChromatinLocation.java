@@ -1,6 +1,6 @@
 package com.spartango.hicgraph.model;
 
-import uk.ac.roslin.ensembl.model.core.Gene;
+import com.spartango.ensembl.model.Gene;
 
 public class ChromatinLocation {
     // Strand types

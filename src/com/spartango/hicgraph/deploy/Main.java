@@ -1,5 +1,7 @@
 package com.spartango.hicgraph.deploy;
 
+import com.spartango.ensembl.model.Genome;
+import com.spartango.ensembl.raw.EnsemblParser;
 import com.spartango.hicgraph.data.BinaryGraphBuilder;
 import com.spartango.hicgraph.data.GraphConsumer;
 import com.spartango.hicgraph.data.gene.GeneBinner;
@@ -16,7 +18,9 @@ public class Main {
         HiCDataSource dataSource = new HiCParser(
                                                  "/Volumes/DarkIron/HiC Data/raw/GSM455140_428EGAAXX.8.maq.hic.summary.binned.txt");
 
-        GeneBinner binner = new GeneBinner(2000);
+        Genome humanGenome = EnsemblParser.buildGenome("/Volumes/DarkIron/HiC Data/raw/Homo_sapiens.GRCh37.65.gtf");
+        
+        GeneBinner binner = new GeneBinner(2000, humanGenome);
         // HiCDataSource dataSource = new ControlDataSource(2000, 1);
 
         // Setup Graph Pipe

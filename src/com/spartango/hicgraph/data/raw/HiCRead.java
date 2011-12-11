@@ -2,7 +2,7 @@ package com.spartango.hicgraph.data.raw;
 
 import java.io.Serializable;
 
-import uk.ac.roslin.ensembl.model.core.Gene;
+import com.spartango.ensembl.model.Gene;
 
 public class HiCRead implements Serializable {
 

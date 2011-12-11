@@ -7,11 +7,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import uk.ac.roslin.ensembl.model.core.Gene;
-
-import com.spartango.ensembl.CachedChromosome;
-import com.spartango.ensembl.EnsemblConnection;
-import com.spartango.ensembl.EnsemblException;
+import com.spartango.ensembl.model.Chromosome;
+import com.spartango.ensembl.model.Gene;
+import com.spartango.ensembl.model.Genome;
 import com.spartango.hicgraph.data.raw.HiCDataConsumer;
 import com.spartango.hicgraph.data.raw.HiCDataSource;
 import com.spartango.hicgraph.data.raw.HiCRead;
@@ -31,13 +29,14 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
     private List<HiCRead>          reads;
     LinkedBlockingQueue<HiCRead>   newReads;
     private int                    fallbackBinSize;
-    private EnsemblConnection      ensemblLink;
 
-    public GeneBinner(int fallbackBinSize) {
-        this(false, fallbackBinSize);
+    private Genome                 genome;
+
+    public GeneBinner(int fallbackBinSize, Genome g) {
+        this(false, fallbackBinSize, g);
     }
 
-    public GeneBinner(boolean cacheReads, int fallbackBinSize) {
+    public GeneBinner(boolean cacheReads, int fallbackBinSize, Genome g) {
         this.cacheReads = cacheReads;
         this.fallbackBinSize = fallbackBinSize;
 
@@ -52,12 +51,7 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
                                             new LinkedBlockingQueue<Runnable>());
 
         reads = new LinkedList<HiCRead>();
-        try {
-            ensemblLink = new EnsemblConnection();
-        } catch (EnsemblException e) {
-            ensemblLink = null;
-        }
-
+        genome = g;
     }
 
     @Override
@@ -158,19 +152,17 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
         // For each side
         Gene firstPlacedGene = null;
         Gene secondPlacedGene = null;
-        if (ensemblLink != null) {
-            // See if there's a gene there
-            CachedChromosome firstChromosome = ensemblLink.getChromosome(read.getFirstChromosome());
-            firstPlacedGene = firstChromosome.getGeneForPosition((int) read.getFirstPosition());
+        // See if there's a gene there
+        Chromosome firstChromosome = genome.getChromosome(read.getFirstChromosome());
+        firstPlacedGene = firstChromosome.getGeneForPosition((int) read.getFirstPosition());
 
-            CachedChromosome secondChromosome = ensemblLink.getChromosome(read.getSecondChromosome());
-            secondPlacedGene = secondChromosome.getGeneForPosition((int) read.getSecondPosition());
-        }
+        Chromosome secondChromosome = genome.getChromosome(read.getSecondChromosome());
+        secondPlacedGene = secondChromosome.getGeneForPosition((int) read.getSecondPosition());
 
         long firstPosition;
 
         if (firstPlacedGene != null) {
-            firstPosition = CachedChromosome.getGeneStart(firstPlacedGene);
+            firstPosition = firstPlacedGene.getStart();
         } else {
             firstPosition = bin(read.getFirstPosition());
         }
@@ -178,7 +170,7 @@ public class GeneBinner implements HiCDataConsumer, Runnable, HiCDataSource {
         long secondPosition;
 
         if (secondPlacedGene != null) {
-            secondPosition = CachedChromosome.getGeneStart(secondPlacedGene);
+            secondPosition = secondPlacedGene.getStart();
         } else {
             secondPosition = bin(read.getSecondPosition());
         }
