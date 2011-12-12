@@ -1,5 +1,6 @@
 package com.spartango.hicgraph.analysis;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,7 +46,14 @@ public class CoefficientClusterer implements Clusterer, Runnable {
 
                 Set<ChromatinLocation> cluster = new HashSet<ChromatinLocation>();
                 cluster.add(key);
-                cluster.addAll(graph.getNeighbors(key));
+
+                Collection<ChromatinLocation> neighbors = graph.getNeighbors(key);
+                cluster.addAll(neighbors);
+
+                for (ChromatinLocation loc : neighbors) {
+                    cluster.addAll(graph.getNeighbors(loc));
+                }
+
                 System.out.println("ClusterHead: " + coefficients.get(key)
                                    + " -> " + key + " => "
                                    + graph.getNeighbors(key));

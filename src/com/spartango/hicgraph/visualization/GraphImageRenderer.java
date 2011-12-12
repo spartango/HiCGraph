@@ -16,6 +16,7 @@ import com.spartango.hicgraph.model.ChromatinGraph;
 import com.spartango.hicgraph.model.ChromatinLocation;
 import com.spartango.hicgraph.model.ChromatinRelation;
 
+import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.visualization.VisualizationImageServer;
@@ -40,6 +41,11 @@ public class GraphImageRenderer {
                                                                                      -4,
                                                                                      8,
                                                                                      8)));
+    }
+
+    public void setGraph(ChromatinGraph g) {
+        layout = new FRLayout<ChromatinLocation, ChromatinRelation>(g);
+        server.setGraphLayout(layout);
     }
 
     public Image getImage() {
