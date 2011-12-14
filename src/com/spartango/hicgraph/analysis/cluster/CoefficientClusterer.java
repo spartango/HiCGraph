@@ -55,8 +55,7 @@ public class CoefficientClusterer implements Clusterer, Runnable {
                 }
 
                 System.out.println("ClusterHead: " + coefficients.get(key)
-                                   + " -> " + key + " => "
-                                   + graph.getNeighbors(key));
+                                   + " -> " + key);
                 clusters.add(cluster);
             }
         }

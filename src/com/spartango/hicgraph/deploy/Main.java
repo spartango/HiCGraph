@@ -4,6 +4,7 @@ import com.spartango.ensembl.model.Genome;
 import com.spartango.ensembl.raw.EnsemblParser;
 import com.spartango.hicgraph.analysis.cluster.Clusterer;
 import com.spartango.hicgraph.analysis.cluster.CoefficientClusterer;
+import com.spartango.hicgraph.analysis.stat.StatisticGatherer;
 import com.spartango.hicgraph.data.CoexpressionGraphBuilder;
 import com.spartango.hicgraph.data.GraphBuilder;
 import com.spartango.hicgraph.data.gene.GeneBinner;
@@ -17,8 +18,10 @@ public class Main {
                                                   + "139140.txt";
     public static final String ENSEMBL_DB_PATH  = WORKSPACE_PREFIX
                                                   + "Homo_sapiens.GRCh37.65.gtf";
-    public static final String COEXPRES_DB_PATH = "Hsa.coex.v6.top3";
-    public static final String ID_MAP_PATH      = "GeneNameEntrez.txt";
+    public static final String COEXPRES_DB_PATH = WORKSPACE_PREFIX
+                                                  + "Hsa.coex.v6.top3.txt";
+    public static final String ID_MAP_PATH      = WORKSPACE_PREFIX
+                                                  + "GeneNameEntrez.txt";
 
     public static void main(String[] args) {
         // Setup data source
@@ -36,11 +39,14 @@ public class Main {
         // Clusterer
         Clusterer clusterer = new CoefficientClusterer(.66);
 
+        StatisticGatherer gatherer = new StatisticGatherer();
+
         // Assemble pipes
         dataSource.addConsumer(binner);
         binner.addConsumer(builder);
 
         builder.addConsumer(clusterer);
+        clusterer.addConsumer(gatherer);
 
         // Start pipes
         dataSource.startReading();

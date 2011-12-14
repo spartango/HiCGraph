@@ -64,7 +64,7 @@ public class CoexpresDbParser {
                                + lines);
         }
 
-        System.out.println("Built Coexpres Db");
+        System.out.println("Built Coexpres Db " + lines + " -> " + map.size());
         return map;
     }
 }

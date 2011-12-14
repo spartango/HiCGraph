@@ -87,7 +87,9 @@ public class CoexpressionGraphBuilder implements GraphBuilder, Runnable {
                                                                         secondGeneName,
                                                                         firstGeneName));
                 }
-
+                if (coexpression != null) {
+                    System.out.println("Coex: " + coexpression);
+                }
                 link.setCoexpressionCorrelation(coexpression != null ? coexpression
                                                                     : 0.0);
 
