@@ -12,7 +12,7 @@ import com.spartango.hicgraph.model.ChromatinLocation;
 
 public class EnsemblParser {
 
-    public static Genome buildGenome(String filename) {
+    public static Genome buildGenome(String gtffilename) {
 
         Genome genome = new Genome(ChromatinLocation.NUM_CHROMOSOMES);
 
@@ -22,7 +22,7 @@ public class EnsemblParser {
         int lines = 0;
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new FileReader(filename));
+            reader = new BufferedReader(new FileReader(gtffilename));
 
             HashMap<String, Gene> genes = new HashMap<String, Gene>();
 
@@ -48,6 +48,7 @@ public class EnsemblParser {
                             String classification = parts[1];
 
                             if (chromosome != 0) {
+
                                 newGene = new Gene(chromosome, geneName,
                                                    classification);
                                 // Set start and end
@@ -79,7 +80,7 @@ public class EnsemblParser {
             // Close the file
             reader.close();
         } catch (FileNotFoundException e1) {
-            System.err.println("Failed to find GTF file: " + filename);
+            System.err.println("Failed to find GTF file: " + gtffilename);
         } catch (IOException e) {
             System.err.println("Got stuck while trying to read GTF file @line "
                                + lines);

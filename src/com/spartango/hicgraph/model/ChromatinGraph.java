@@ -9,5 +9,5 @@ public class ChromatinGraph extends
 	 * 
 	 */
     private static final long serialVersionUID = 5999702261046737473L;
-
+    
 }

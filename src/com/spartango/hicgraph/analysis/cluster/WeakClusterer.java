@@ -1,4 +1,4 @@
-package com.spartango.hicgraph.analysis;
+package com.spartango.hicgraph.analysis.cluster;
 
 import java.util.Set;
 
@@ -6,12 +6,12 @@ import com.spartango.hicgraph.model.ChromatinGraph;
 import com.spartango.hicgraph.model.ChromatinLocation;
 import com.spartango.hicgraph.model.ChromatinRelation;
 
-public class BicomponentClusterer
+public class WeakClusterer
         extends
-        edu.uci.ics.jung.algorithms.cluster.BicomponentClusterer<ChromatinLocation, ChromatinRelation>
-                                                                                                      implements
-                                                                                                      Clusterer,
-                                                                                                      Runnable {
+        edu.uci.ics.jung.algorithms.cluster.WeakComponentClusterer<ChromatinLocation, ChromatinRelation>
+                                                                                                        implements
+                                                                                                        Clusterer,
+                                                                                                        Runnable {
 
     private ChromatinGraph  source;
 
@@ -20,7 +20,7 @@ public class BicomponentClusterer
     private boolean         running;
     private Thread          clusterThread;
 
-    public BicomponentClusterer() {
+    public WeakClusterer() {
         consumer = null;
         source = null;
         running = false;
@@ -70,7 +70,8 @@ public class BicomponentClusterer
         }
     }
 
-    private void notifyComplete(Set<Set<ChromatinLocation>> clusters, ChromatinGraph graph) {
+    private void notifyComplete(Set<Set<ChromatinLocation>> clusters,
+                                ChromatinGraph graph) {
         if (consumer != null) {
             consumer.onClusteringComplete(clusters, graph);
         }

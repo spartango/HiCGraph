@@ -1,4 +1,4 @@
-package com.spartango.hicgraph.analysis;
+package com.spartango.hicgraph.analysis.cluster;
 
 import java.util.Set;
 

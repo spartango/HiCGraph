@@ -20,17 +20,17 @@ public class Gene {
     private String          classification;
 
     // TODO elements
-    
+
     public Gene(int chromsome, String name, String classification) {
         this.chromosome = chromsome;
         this.name = name;
         this.classification = classification;
     }
-    
+
     public long getStart() {
         return start;
     }
-    
+
     public long getEnd() {
         return end;
     }
@@ -46,7 +46,6 @@ public class Gene {
     public String getClassification() {
         return classification;
     }
-
 
     public void setStart(long start) {
         this.start = start;

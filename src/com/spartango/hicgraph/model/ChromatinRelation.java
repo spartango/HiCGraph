@@ -4,10 +4,29 @@ public class ChromatinRelation {
     private ChromatinLocation firstLoc;
     private ChromatinLocation secondLoc;
 
+    private double            coexpressionCorrelation;
+
     public ChromatinRelation(ChromatinLocation firstLoc,
                              ChromatinLocation secondLoc) {
         this.firstLoc = firstLoc;
         this.secondLoc = secondLoc;
+        coexpressionCorrelation = 0;
+    }
+
+    public double getCoexpressionCorrelation() {
+        return coexpressionCorrelation;
+    }
+
+    public void setCoexpressionCorrelation(double coexpressionCorrelation) {
+        this.coexpressionCorrelation = coexpressionCorrelation;
+    }
+
+    public ChromatinLocation getFirstLoc() {
+        return firstLoc;
+    }
+
+    public ChromatinLocation getSecondLoc() {
+        return secondLoc;
     }
 
     @Override
@@ -20,8 +39,7 @@ public class ChromatinRelation {
         if (obj instanceof ChromatinRelation) {
             ChromatinRelation target = (ChromatinRelation) obj;
             return ((target.firstLoc.equals(firstLoc) || target.firstLoc.equals(secondLoc))
-                    && (target.secondLoc.equals(firstLoc) || target.secondLoc.equals(firstLoc)) 
-                    && !(target.firstLoc.equals(target.secondLoc)));
+                    && (target.secondLoc.equals(firstLoc) || target.secondLoc.equals(firstLoc)) && !(target.firstLoc.equals(target.secondLoc)));
 
         } else
             return false;
