@@ -1,4 +1,11 @@
 <project name="HiC Graph" basedir=".">
+	<path id="master-classpath">
+	  <fileset dir="lib">
+	    <include name="*.jar"/>
+	  </fileset>
+
+	  <pathelement path="${build.dir}"/>
+	</path>
 
 	<target name="clean">
 	    <delete dir="bin" />
@@ -21,12 +28,17 @@
 
 	<target name="compile">
 	    <mkdir dir="bin/" />
-	    <javac srcdir="src" destdir="bin"/>
+	    <javac srcdir="src" destdir="bin">
+	    	<classpath refid="master-classpath"/>
+	    </javac>
 	</target>
 
 	<target name="jar" depends="compile">
 	    <mkdir dir="jar" />
 	    <jar destfile="jar/HiCGraph.jar" basedir="bin">
+	    	<manifest>
+                <attribute name="Main-Class" value="com.spartango.hicgraph.deploy.Main"/>
+            </manifest>
 	    </jar>
 	</target>
 
