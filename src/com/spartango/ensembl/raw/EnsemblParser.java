@@ -12,9 +12,11 @@ import com.spartango.hicgraph.model.ChromatinLocation;
 
 public class EnsemblParser {
 
-    public static Genome buildGenome(String gtffilename) {
+    public static Genome buildGenome(String gtffilename,
+                                     String compartmentPrefix, int resolution) {
 
-        Genome genome = new Genome(ChromatinLocation.NUM_CHROMOSOMES);
+        Genome genome = new Genome(ChromatinLocation.NUM_CHROMOSOMES,
+                                   compartmentPrefix, resolution);
 
         System.out.println("Building genome from GTF");
 

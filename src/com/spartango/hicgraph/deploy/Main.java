@@ -18,19 +18,22 @@ public class Main {
                                                   + "139140.txt";
     public static final String ENSEMBL_DB_PATH  = WORKSPACE_PREFIX
                                                   + "Homo_sapiens.GRCh37.65.gtf";
+    public static final String COMPARTMENT_PATH = WORKSPACE_PREFIX
+                                                  + "HiCCompartment_";
 
     public static void main(String[] args) {
         // Setup data source
         HiCDataSource dataSource = new HiCParser(DATA_PATH);
 
-        Genome humanGenome = EnsemblParser.buildGenome(ENSEMBL_DB_PATH);
+        Genome humanGenome = EnsemblParser.buildGenome(ENSEMBL_DB_PATH,
+                                                       COMPARTMENT_PATH, 100000);
 
         GeneBinner binner = new GeneBinner(50000, humanGenome);
         // HiCDataSource dataSource = new ControlDataSource(21392274);
 
         // Setup Graph Pipe
         GraphBuilder builder = new BinaryGraphBuilder();
-        
+
         // Add data sources
 
         // Clusterer
