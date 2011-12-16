@@ -25,10 +25,6 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
     private Vector<RelationDataSource> dataSources;
 
     public BinaryGraphBuilder() {
-        this(null);
-    }
-
-    public BinaryGraphBuilder(ReadFilter f) {
         graph = new ChromatinGraph();
         consumer = null;
 
@@ -125,8 +121,9 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
     public void run() {
         int reads = 0;
         running = true;
-        System.out.println("Builder Started: "
-                           + Thread.currentThread().getName());
+        System.out.println("Builder Started on "
+                           + Thread.currentThread().getName() + " with "
+                           + filters.size() + " filter(s)");
         while (running && source != null) {
             // Try to grab an element off of the sourceQueue
             try {

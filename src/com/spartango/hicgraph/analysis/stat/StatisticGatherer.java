@@ -22,7 +22,8 @@ public class StatisticGatherer implements ClusterConsumer {
 
     @Override
     public void onClusteringComplete() {
-
+        System.out.println("Clustering Completed");
+        System.exit(0);
     }
 
 }

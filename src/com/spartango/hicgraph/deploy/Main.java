@@ -5,6 +5,7 @@ import com.spartango.ensembl.raw.EnsemblParser;
 import com.spartango.hicgraph.analysis.cluster.Clusterer;
 import com.spartango.hicgraph.analysis.cluster.CoefficientClusterer;
 import com.spartango.hicgraph.analysis.stat.StatisticGatherer;
+import com.spartango.hicgraph.data.filters.IntraCompartmentFilter;
 import com.spartango.hicgraph.data.gene.GeneBinner;
 import com.spartango.hicgraph.data.raw.HiCDataSource;
 import com.spartango.hicgraph.data.raw.HiCParser;
@@ -33,6 +34,7 @@ public class Main {
 
         // Setup Graph Pipe
         GraphBuilder builder = new BinaryGraphBuilder();
+        builder.addFilter(new IntraCompartmentFilter(humanGenome));
 
         // Add data sources
 
