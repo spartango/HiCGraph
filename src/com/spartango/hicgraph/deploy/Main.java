@@ -41,7 +41,7 @@ public class Main {
         // Clusterer
         Clusterer clusterer = new CoefficientClusterer(.7);
 
-        StatisticGatherer gatherer = new StatisticGatherer();
+        StatisticGatherer gatherer = new StatisticGatherer("");
 
         // Assemble pipes
         dataSource.addConsumer(binner);

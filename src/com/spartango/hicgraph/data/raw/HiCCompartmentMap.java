@@ -31,6 +31,10 @@ public class HiCCompartmentMap {
             return null;
     }
 
+    public int size() {
+        return map.size();
+    }
+
     public static HiCCompartmentMap parseFromFile(String filename,
                                                   int resolution) {
         HiCCompartmentMap newMap = new HiCCompartmentMap();
@@ -60,6 +64,7 @@ public class HiCCompartmentMap {
                 } else if (currentCompartment.getState() == state) {
                     currentCompartment.setEnd(currentPosition + resolution);
                 }
+                currentPosition += resolution;
             }
         } catch (FileNotFoundException e) {
             System.err.println("Failed to find " + filename
@@ -71,7 +76,7 @@ public class HiCCompartmentMap {
             System.err.println("Error reading " + filename
                                + ", couldn't parse a number from " + line);
         }
-        System.out.println("Built Compartment Map");
+        System.out.println("Built Compartment Map " + newMap.size());
         return newMap;
     }
 }

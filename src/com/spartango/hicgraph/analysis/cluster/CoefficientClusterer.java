@@ -57,7 +57,9 @@ public class CoefficientClusterer implements Clusterer, Runnable {
         if (source != null) {
             running = true;
             System.out.println("Clusterer Started: " + source.getVertexCount()
-                               + " nodes & " + source.getEdgeCount() + " edges");
+                               + " nodes & " + source.getEdgeCount()
+                               + " edges. on "
+                               + Thread.currentThread().getName());
 
             HashSet<ChromatinLocation> clustered = new HashSet<ChromatinLocation>();
             BlockingQueue<ChromatinGraph> clusterQueue = new LinkedBlockingQueue<ChromatinGraph>();
@@ -98,6 +100,7 @@ public class CoefficientClusterer implements Clusterer, Runnable {
             }
 
             // Notify Finished
+            System.out.println("Clusterer Finished");
             notifyFinished();
             running = false;
         }

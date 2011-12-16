@@ -19,7 +19,14 @@ public class IntraCompartmentFilter implements ReadFilter {
                                                       .getComparment(r.getFirstPosition());
         ChromatinCompartment secondCompartment = genome.getChromosome(r.getSecondChromosome())
                                                        .getComparment(r.getSecondPosition());
-
-        return (firstCompartment != null && secondCompartment != null && firstCompartment == secondCompartment);
+        // if (firstCompartment == null || secondCompartment == null) {
+        // System.err.println("No compartment for " + r.getFirstChromosome()
+        // + ":" + r.getFirstPosition() + " -> "
+        // + firstCompartment + " & "
+        // + r.getSecondChromosome() + ":"
+        // + r.getSecondPosition() + " -> "
+        // + secondCompartment);
+        // }
+        return (firstCompartment != null && secondCompartment != null && firstCompartment == secondCompartment );
     }
 }
