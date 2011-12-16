@@ -1,5 +1,8 @@
 package com.spartango.hicgraph.analysis.stat;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
@@ -79,6 +82,14 @@ public class StatisticGatherer implements ClusterConsumer, Runnable {
     }
 
     private void saveGlobalStats(ChromatinGraph mainGraph2) {
+        FileWriter writer;
+        try {
+            writer = new FileWriter(this.filePath + "global_stats");
+            writer.write(generateGlobalStats(mainGraph2));
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Error writing global stats to file");
+        }
 
     }
 
@@ -93,10 +104,10 @@ public class StatisticGatherer implements ClusterConsumer, Runnable {
 
     private String generateGlobalStats(ChromatinGraph mainGraph2) {
         String stats = "";
-        
+
         SortedMap<Integer, Integer> edgeDistribution = calculateEdgeDistribution(mainGraph2);
-        for( Entry<Integer, Integer> key : edgeDistribution.entrySet()) {
-            
+        for (Map.Entry<Integer, Integer> entry : edgeDistribution.entrySet()) {
+            stats += entry.getKey() + "\t" + entry.getValue() + "\n";
         }
         // Calculate the cardinality distribution
 

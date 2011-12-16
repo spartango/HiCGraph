@@ -14,13 +14,14 @@ import com.spartango.hicgraph.graph.GraphBuilder;
 
 public class Main {
 
-    public static final String WORKSPACE_PREFIX = "/Volumes/DarkIron/HiC Data/raw/";
-    public static final String DATA_PATH        = WORKSPACE_PREFIX
-                                                  + "139140.txt";
-    public static final String ENSEMBL_DB_PATH  = WORKSPACE_PREFIX
+    public static final String RAWDATA_PREFIX   = "/Volumes/DarkIron/HiC Data/raw/";
+    public static final String DATA_PATH        = RAWDATA_PREFIX + "139140.txt";
+    public static final String ENSEMBL_DB_PATH  = RAWDATA_PREFIX
                                                   + "Homo_sapiens.GRCh37.65.gtf";
-    public static final String COMPARTMENT_PATH = WORKSPACE_PREFIX
+    public static final String COMPARTMENT_PATH = RAWDATA_PREFIX
                                                   + "HiCCompartment_";
+
+    public static final String OUTPUT_PATH      = "/Volumes/DarkIron/HiC Data/";
 
     public static void main(String[] args) {
         // Setup data source
@@ -41,7 +42,7 @@ public class Main {
         // Clusterer
         Clusterer clusterer = new CoefficientClusterer(.7);
 
-        StatisticGatherer gatherer = new StatisticGatherer("");
+        StatisticGatherer gatherer = new StatisticGatherer(OUTPUT_PATH);
 
         // Assemble pipes
         dataSource.addConsumer(binner);
