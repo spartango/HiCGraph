@@ -1,4 +1,4 @@
-package com.spartango.hicgraph.data;
+package com.spartango.hicgraph.graph;
 
 import com.spartango.hicgraph.data.raw.HiCDataConsumer;
 import com.spartango.hicgraph.model.ChromatinGraph;

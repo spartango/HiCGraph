@@ -1,40 +1,34 @@
-package com.spartango.hicgraph.data;
+package com.spartango.hicgraph.graph;
 
-import java.util.HashMap;
+import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.spartango.coexpres.CoexpresDbParser;
 import com.spartango.hicgraph.data.filters.ReadFilter;
 import com.spartango.hicgraph.data.raw.HiCRead;
 import com.spartango.hicgraph.model.ChromatinGraph;
 import com.spartango.hicgraph.model.ChromatinLocation;
 import com.spartango.hicgraph.model.ChromatinRelation;
 
-import edu.uci.ics.jung.graph.util.Pair;
+public class BinaryGraphBuilder implements GraphBuilder, Runnable {
 
-public class CoexpressionGraphBuilder implements GraphBuilder, Runnable {
+    private ChromatinGraph             graph;
+    private GraphConsumer              consumer;
 
-    private ChromatinGraph                graph;
-    private GraphConsumer                 consumer;
+    private Thread                     buildThread;
+    private boolean                    running;
 
-    private Thread                        buildThread;
-    private boolean                       running;
+    private BlockingQueue<HiCRead>     source;
+    private boolean                    sourceComplete;
 
-    private BlockingQueue<HiCRead>        source;
-    private boolean                       sourceComplete;
+    private Vector<ReadFilter>         filters;
+    private Vector<RelationDataSource> dataSources;
 
-    private HashMap<Pair<String>, Double> coexpressionMap;
-
-    private ReadFilter                    filter;
-
-    public CoexpressionGraphBuilder(String coexpresdbFile, String idmapFile) {
-        this(null, coexpresdbFile, idmapFile);
+    public BinaryGraphBuilder() {
+        this(null);
     }
 
-    public CoexpressionGraphBuilder(ReadFilter f,
-                                    String coexpresdbFile,
-                                    String idmapFile) {
+    public BinaryGraphBuilder(ReadFilter f) {
         graph = new ChromatinGraph();
         consumer = null;
 
@@ -43,15 +37,15 @@ public class CoexpressionGraphBuilder implements GraphBuilder, Runnable {
         source = null;
         sourceComplete = false;
 
-        coexpressionMap = CoexpresDbParser.parseDb(coexpresdbFile, idmapFile);
+        dataSources = new Vector<RelationDataSource>();
 
-        filter = f;
+        filters = new Vector<ReadFilter>();
     }
 
     private void addRead(HiCRead read) {
 
         // Filter if necessary
-        if (filter == null || filter.check(read)) {
+        if (checkFilters(read)) {
 
             // Prevent Self links, these are meaningless
             if (read.getFirstPosition() != read.getSecondPosition()) {
@@ -72,31 +66,23 @@ public class CoexpressionGraphBuilder implements GraphBuilder, Runnable {
                 // Then link the nodes with an edge.
                 ChromatinRelation link = new ChromatinRelation(firstLoc,
                                                                secondLoc);
-                String firstGeneName = firstLoc.getGene() != null ? firstLoc.getGene()
-                                                                            .getName()
-                                                                 : "";
-                String secondGeneName = firstLoc.getGene() != null ? secondLoc.getGene()
-                                                                              .getName()
-                                                                  : "";
 
-                Double coexpression = coexpressionMap.get(new Pair<String>(
-                                                                           firstGeneName,
-                                                                           secondGeneName));
-                if (coexpression == null) {
-                    coexpression = coexpressionMap.get(new Pair<String>(
-                                                                        secondGeneName,
-                                                                        firstGeneName));
+                for (RelationDataSource source : dataSources) {
+                    source.applyData(link);
                 }
-                if (coexpression != null) {
-                    System.out.println("Coex: " + coexpression);
-                }
-                link.setCoexpressionCorrelation(coexpression != null ? coexpression
-                                                                    : 0.0);
 
                 if (!graph.containsEdge(link))
                     graph.addEdge(link, firstLoc, secondLoc);
             }
         }
+    }
+
+    private boolean checkFilters(HiCRead read) {
+        for (ReadFilter filter : filters) {
+            if (!filter.check(read))
+                return false;
+        }
+        return true;
     }
 
     @Override
@@ -167,4 +153,21 @@ public class CoexpressionGraphBuilder implements GraphBuilder, Runnable {
             consumer.onGraphBuilt(graph);
         }
     }
+
+    public void addDataSource(RelationDataSource r) {
+        dataSources.add(r);
+    }
+
+    public void removeDataSource(RelationDataSource r) {
+        dataSources.remove(r);
+    }
+
+    public void addFilter(ReadFilter f) {
+        filters.add(f);
+    }
+
+    public void removeFilter(ReadFilter f) {
+        filters.remove(f);
+    }
+
 }

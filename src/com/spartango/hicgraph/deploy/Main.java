@@ -5,11 +5,11 @@ import com.spartango.ensembl.raw.EnsemblParser;
 import com.spartango.hicgraph.analysis.cluster.Clusterer;
 import com.spartango.hicgraph.analysis.cluster.CoefficientClusterer;
 import com.spartango.hicgraph.analysis.stat.StatisticGatherer;
-import com.spartango.hicgraph.data.CoexpressionGraphBuilder;
-import com.spartango.hicgraph.data.GraphBuilder;
 import com.spartango.hicgraph.data.gene.GeneBinner;
 import com.spartango.hicgraph.data.raw.HiCDataSource;
 import com.spartango.hicgraph.data.raw.HiCParser;
+import com.spartango.hicgraph.graph.BinaryGraphBuilder;
+import com.spartango.hicgraph.graph.GraphBuilder;
 
 public class Main {
 
@@ -18,10 +18,6 @@ public class Main {
                                                   + "139140.txt";
     public static final String ENSEMBL_DB_PATH  = WORKSPACE_PREFIX
                                                   + "Homo_sapiens.GRCh37.65.gtf";
-    public static final String COEXPRES_DB_PATH = WORKSPACE_PREFIX
-                                                  + "Hsa.coex.v6.top3.txt";
-    public static final String ID_MAP_PATH      = WORKSPACE_PREFIX
-                                                  + "GeneNameEntrez.txt";
 
     public static void main(String[] args) {
         // Setup data source
@@ -33,11 +29,12 @@ public class Main {
         // HiCDataSource dataSource = new ControlDataSource(21392274);
 
         // Setup Graph Pipe
-        GraphBuilder builder = new CoexpressionGraphBuilder(COEXPRES_DB_PATH,
-                                                            ID_MAP_PATH);
+        GraphBuilder builder = new BinaryGraphBuilder();
+        
+        // Add data sources
 
         // Clusterer
-        Clusterer clusterer = new CoefficientClusterer(.66);
+        Clusterer clusterer = new CoefficientClusterer(.7);
 
         StatisticGatherer gatherer = new StatisticGatherer();
 

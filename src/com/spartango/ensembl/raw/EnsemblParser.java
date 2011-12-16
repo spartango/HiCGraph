@@ -48,7 +48,6 @@ public class EnsemblParser {
                             String classification = parts[1];
 
                             if (chromosome != 0) {
-
                                 newGene = new Gene(chromosome, geneName,
                                                    classification);
                                 // Set start and end

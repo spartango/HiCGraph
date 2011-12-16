@@ -1,15 +1,14 @@
 package com.spartango.hicgraph.analysis.cluster;
 
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.spartango.hicgraph.model.ChromatinGraph;
 import com.spartango.hicgraph.model.ChromatinLocation;
 
+import edu.uci.ics.jung.algorithms.filters.FilterUtils;
 import edu.uci.ics.jung.algorithms.metrics.Metrics;
 
 public class CoefficientClusterer implements Clusterer, Runnable {
@@ -27,40 +26,6 @@ public class CoefficientClusterer implements Clusterer, Runnable {
         consumer = null;
         source = null;
         running = false;
-    }
-
-    @Override
-    public Set<Set<ChromatinLocation>> findClusters(ChromatinGraph graph) {
-        // Get clustering coefficients
-        Map<ChromatinLocation, Double> coefficients = Metrics.clusteringCoefficients(graph);
-
-        List<ChromatinLocation> thresholded = new LinkedList<ChromatinLocation>();
-
-        // Pull up neighbors as "cluster"
-        Set<Set<ChromatinLocation>> clusters = new HashSet<Set<ChromatinLocation>>();
-
-        // Filter based on threshold & distribution
-        for (ChromatinLocation key : coefficients.keySet()) {
-            if (coefficients.get(key) >= threshold) {
-                thresholded.add(key);
-
-                Set<ChromatinLocation> cluster = new HashSet<ChromatinLocation>();
-                cluster.add(key);
-
-                Collection<ChromatinLocation> neighbors = graph.getNeighbors(key);
-                cluster.addAll(neighbors);
-
-                for (ChromatinLocation loc : neighbors) {
-                    cluster.addAll(graph.getNeighbors(loc));
-                }
-
-                System.out.println("ClusterHead: " + coefficients.get(key)
-                                   + " -> " + key);
-                clusters.add(cluster);
-            }
-        }
-
-        return clusters;
     }
 
     @Override
@@ -94,18 +59,66 @@ public class CoefficientClusterer implements Clusterer, Runnable {
             System.out.println("Clusterer Started: " + source.getVertexCount()
                                + " nodes & " + source.getEdgeCount() + " edges");
 
-            Set<Set<ChromatinLocation>> clusters = findClusters(source);
-            notifyComplete(clusters, source);
+            HashSet<ChromatinLocation> clustered = new HashSet<ChromatinLocation>();
+            BlockingQueue<ChromatinGraph> clusterQueue = new LinkedBlockingQueue<ChromatinGraph>();
 
+            // Notify start to consumers
+            notifyStart(clusterQueue, source);
+
+            // Calculate the clustering coefficients
+            Map<ChromatinLocation, Double> clusteringCoefficients = Metrics.clusteringCoefficients(source);
+
+            // For each node
+            for (ChromatinLocation headLocation : clusteringCoefficients.keySet()) {
+                if (clusteringCoefficients.get(headLocation) >= threshold
+                    && !clustered.contains(headLocation)) {
+
+                    // Grab its neighbors
+                    HashSet<ChromatinLocation> cluster = new HashSet<ChromatinLocation>();
+                    cluster.add(headLocation);
+                    cluster.addAll(cluster);
+
+                    // Create the induced Graph
+                    ChromatinGraph induced = FilterUtils.createInducedSubgraph(cluster,
+                                                                               source);
+
+                    // TODO: Not sure if this makes the most sense
+                    clustered.addAll(clustered);
+
+                    // Hand off the cluster
+                    try {
+                        clusterQueue.put(induced);
+                        notifyNewCluster(induced);
+                    } catch (InterruptedException e) {
+                        System.err.println("Interrupted while adding cluster to out queue");
+                        break;
+                    }
+                }
+
+            }
+
+            // Notify Finished
+            notifyFinished();
             running = false;
         }
     }
 
-    private void notifyComplete(Set<Set<ChromatinLocation>> clusters,
-                                ChromatinGraph graph) {
-        if (consumer != null) {
-            consumer.onClusteringComplete(clusters, graph);
-        }
+    private void notifyFinished() {
+        if (consumer != null)
+            consumer.onClusteringComplete();
     }
 
+    private void notifyNewCluster(ChromatinGraph induced) {
+        if (consumer != null) {
+            consumer.onClusterFound(induced);
+        }
+
+    }
+
+    private void notifyStart(BlockingQueue<ChromatinGraph> clusterQueue,
+                             ChromatinGraph source2) {
+        if (consumer != null) {
+            consumer.onClusteringStarted(source2, clusterQueue);
+        }
+    }
 }
