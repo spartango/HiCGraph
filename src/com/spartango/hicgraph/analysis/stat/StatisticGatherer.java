@@ -12,6 +12,8 @@ import com.spartango.hicgraph.analysis.cluster.ClusterConsumer;
 import com.spartango.hicgraph.model.ChromatinGraph;
 import com.spartango.hicgraph.model.ChromatinLocation;
 
+import edu.uci.ics.jung.algorithms.metrics.Metrics;
+
 public class StatisticGatherer implements ClusterConsumer, Runnable {
 
     private ChromatinGraph                mainGraph;
@@ -94,11 +96,22 @@ public class StatisticGatherer implements ClusterConsumer, Runnable {
     }
 
     private void saveClusterStats(ChromatinGraph cluster) {
-
+        FileWriter writer;
+        try {
+            writer = new FileWriter(this.filePath + "cluster_"
+                                    + cluster.hashCode());
+            writer.write(generateClusterStats(cluster));
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Error writing global stats to file");
+        }
     }
 
     private String generateClusterStats(ChromatinGraph cluster) {
         String stats = "";
+        stats += "Nodes: " + cluster.getVertexCount() + "\n";
+        stats += "Edges: " + cluster.getEdgeCount() + "\n";
+        stats += "Contents: " + cluster.getVertices()+"\n";
         return stats;
     }
 

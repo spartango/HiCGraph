@@ -31,7 +31,7 @@ public class Main {
                                                        COMPARTMENT_PATH, 100000);
 
         GeneBinner binner = new GeneBinner(50000, humanGenome);
-        // HiCDataSource dataSource = new ControlDataSource(21392274);
+        //HiCDataSource dataSource = new ControlDataSource(21392274);
 
         // Setup Graph Pipe
         GraphBuilder builder = new BinaryGraphBuilder();
