@@ -35,10 +35,11 @@
 
 	<target name="jar" depends="compile">
 	    <mkdir dir="jar" />
-	    <jar destfile="jar/HiCGraph.jar" basedir="bin">
+	    <jar destfile="jar/HiCGraph.jar" basedir=".">
 	    	<manifest>
                 <attribute name="Main-Class" value="com.spartango.hicgraph.deploy.Main"/>
-            </manifest>
+            	<attribute name="Class-Path" value="lib/*."/>
+        	</manifest>
 	    </jar>
 	</target>
 
