@@ -78,7 +78,7 @@ public class CoefficientClusterer implements Clusterer, Runnable {
                     // Grab its neighbors
                     HashSet<ChromatinLocation> cluster = new HashSet<ChromatinLocation>();
                     cluster.add(headLocation);
-                    cluster.addAll(cluster);
+                    cluster.addAll(source.getNeighbors(headLocation));
 
                     // Create the induced Graph
                     ChromatinGraph induced = FilterUtils.createInducedSubgraph(cluster,
