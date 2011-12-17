@@ -15,12 +15,11 @@ import com.spartango.hicgraph.graph.GraphBuilder;
 public class Main {
 
     public static final String RAWDATA_PREFIX   = "../";
-    public static final String DATA_PATH        = RAWDATA_PREFIX + "139140.txt";
+    public static final String DATA_PATH        = RAWDATA_PREFIX + "all_reads.txt";
     public static final String ENSEMBL_DB_PATH  = RAWDATA_PREFIX
                                                   + "Homo_sapiens.GRCh37.65.gtf";
     public static final String COMPARTMENT_PATH = RAWDATA_PREFIX
                                                   + "HiCCompartment_";
-
     public static final String OUTPUT_PATH      = "../";
 
     public static void main(String[] args) {
@@ -40,7 +39,7 @@ public class Main {
         // Add data sources
 
         // Clusterer
-        Clusterer clusterer = new CoefficientClusterer(.7);
+        Clusterer clusterer = new CoefficientClusterer(.65);
 
         StatisticGatherer gatherer = new StatisticGatherer(OUTPUT_PATH);
 
