@@ -5,12 +5,22 @@ public class ChromatinRelation {
     private ChromatinLocation secondLoc;
 
     private double            coexpressionCorrelation;
+    private double            certainty;
 
     public ChromatinRelation(ChromatinLocation firstLoc,
                              ChromatinLocation secondLoc) {
         this.firstLoc = firstLoc;
         this.secondLoc = secondLoc;
         coexpressionCorrelation = 0;
+        certainty = 1;
+    }
+
+    public double getCertainty() {
+        return certainty;
+    }
+
+    public void setCertainty(double certainty) {
+        this.certainty = certainty;
     }
 
     public double getCoexpressionCorrelation() {

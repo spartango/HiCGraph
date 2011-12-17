@@ -63,11 +63,15 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
                 ChromatinRelation link = new ChromatinRelation(firstLoc,
                                                                secondLoc);
 
+                // This will be used to verify that redundancy is avoided
+                ChromatinRelation revLink = new ChromatinRelation(secondLoc,
+                                                                  firstLoc);
+
                 for (RelationDataSource source : dataSources) {
                     source.applyData(link);
                 }
 
-                if (!graph.containsEdge(link))
+                if (!graph.containsEdge(link) && !graph.containsEdge(revLink))
                     graph.addEdge(link, firstLoc, secondLoc);
             }
         }

@@ -4,6 +4,7 @@ import com.spartango.ensembl.model.Genome;
 import com.spartango.ensembl.raw.EnsemblParser;
 import com.spartango.hicgraph.analysis.cluster.Clusterer;
 import com.spartango.hicgraph.analysis.cluster.CoefficientClusterer;
+import com.spartango.hicgraph.analysis.inference.TransitiveInferenceEngine;
 import com.spartango.hicgraph.analysis.stat.StatisticGatherer;
 import com.spartango.hicgraph.data.filters.IntraCompartmentFilter;
 import com.spartango.hicgraph.data.gene.GeneBinner;
@@ -37,10 +38,11 @@ public class Main {
         GraphBuilder builder = new BinaryGraphBuilder();
         builder.addFilter(new IntraCompartmentFilter(humanGenome));
 
-        // Add data sources
-
+        // Setup inference
+        TransitiveInferenceEngine inference = new TransitiveInferenceEngine(.5);
+        
         // Clusterer
-        Clusterer clusterer = new CoefficientClusterer(.65);
+        Clusterer clusterer = new CoefficientClusterer(.8);
 
         StatisticGatherer gatherer = new StatisticGatherer(OUTPUT_PATH);
 
@@ -48,7 +50,8 @@ public class Main {
         dataSource.addConsumer(binner);
         binner.addConsumer(builder);
 
-        builder.addConsumer(clusterer);
+        builder.addConsumer(inference);
+        inference.addConsumer(clusterer);
         clusterer.addConsumer(gatherer);
 
         // Start pipes
