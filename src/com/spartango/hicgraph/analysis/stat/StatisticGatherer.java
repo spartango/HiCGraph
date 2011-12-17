@@ -67,6 +67,7 @@ public class StatisticGatherer implements ClusterConsumer, Runnable {
                 if (cluster != null) {
                     // Print Cluster Stats
                     saveClusterStats(cluster);
+                    System.out.print("Clusters found: "+clusters+"\r");
                     clusters++;
                 } else if (sourceComplete) {
                     running = false;
@@ -77,7 +78,7 @@ public class StatisticGatherer implements ClusterConsumer, Runnable {
             }
 
         }
-        System.out.println("Statistics Finished: " + clusters + " clusters");
+        System.out.println("\nStatistics Finished: " + clusters + " clusters");
 
         // Last pipe
         System.exit(0);

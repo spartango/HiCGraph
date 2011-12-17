@@ -71,8 +71,12 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
                     source.applyData(link);
                 }
 
-                if (!graph.containsEdge(link) && !graph.containsEdge(revLink))
+                if (!graph.containsEdge(link) && !graph.containsEdge(revLink)) {
                     graph.addEdge(link, firstLoc, secondLoc);
+                    if (graph.getEdgeCount() % 100 == 0)
+                        System.out.print("Edges: " + graph.getEdgeCount()
+                                         + "\r");
+                }
             }
         }
     }
@@ -145,7 +149,7 @@ public class BinaryGraphBuilder implements GraphBuilder, Runnable {
             }
 
         }
-        System.out.println("Builder Finished: " + reads + " reads");
+        System.out.println("\nBuilder Finished: " + reads + " reads");
         notifyComplete();
     }
 

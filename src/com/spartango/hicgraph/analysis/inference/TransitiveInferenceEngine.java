@@ -39,7 +39,9 @@ public class TransitiveInferenceEngine implements Runnable, GraphConsumer,
 
         // for each node
         System.out.println("Inferring Edges on "
-                           + Thread.currentThread().getName());
+                           + Thread.currentThread().getName() + ": "
+                           + source.getEdgeCount() + " edges & "
+                           + source.getVertexCount() + " nodes");
         for (ChromatinLocation node : source.getVertices()) {
 
             // Get neighbors
@@ -57,8 +59,8 @@ public class TransitiveInferenceEngine implements Runnable, GraphConsumer,
 
                     // This will be used to verify that redundancy is avoided
                     ChromatinRelation revLink = new ChromatinRelation(
-                                                                      neighbors[i],
-                                                                      neighbors[j]);
+                                                                      neighbors[j],
+                                                                      neighbors[i]);
                     if (!source.containsEdge(link)
                         && !source.containsEdge(revLink)) {
 
@@ -73,18 +75,25 @@ public class TransitiveInferenceEngine implements Runnable, GraphConsumer,
                         // certainty
                         // Should probably not connect things with too low
                         // certainty
-                        double newCertainty = (iRelation.getCertainty() + jRelation.getCertainty()) / 4.0;
-                        if (newCertainty >= certaintyThreshold) {
-                            link.setCertainty(newCertainty);
-                            source.addEdge(link, neighbors[i], neighbors[j]);
-                            inferredCount++;
+                        if (jRelation != null && iRelation != null) {
+                            double newCertainty = (iRelation.getCertainty() + jRelation.getCertainty()) / 4.0;
+                            if (newCertainty >= certaintyThreshold) {
+                                link.setCertainty(newCertainty);
+                                source.addEdge(link, neighbors[i], neighbors[j]);
+                                inferredCount++;
+                                if (inferredCount % 100 == 0)
+                                    System.out.print("Edges inferred: "
+                                                     + inferredCount + "\r");
+
+                            }
                         }
                     }
                 }
             }
 
         }
-        System.out.println("Inferred Edges " + inferredCount);
+        System.out.println("Inferred Edges " + inferredCount + " => "
+                           + source.getEdgeCount());
         notifyComplete(source);
     }
 
